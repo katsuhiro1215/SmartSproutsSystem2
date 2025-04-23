@@ -69,7 +69,11 @@ const submit = () => {
           <InputError class="mt-2" :message="form.errors.password" />
         </FormGroup>
         <FormGroup>
-          <InputLabel for="password_confirmation" value="Confirm Password" required />
+          <InputLabel
+            for="password_confirmation"
+            value="Confirm Password"
+            required
+          />
           <TextInput
             id="password_confirmation"
             type="password"
@@ -84,12 +88,14 @@ const submit = () => {
           />
         </FormGroup>
         <FormGroup>
-            <PrimaryButton
-              :class="{ 'opacity-25': form.processing }"
-              :disabled="form.processing"
-            >
-              Register
-            </PrimaryButton>
+          <PrimaryButton
+            buttonActionType="submit"
+            buttonType="primary"
+            :class="{ 'opacity-25': form.processing }"
+            :disabled="form.processing"
+          >
+            Register
+          </PrimaryButton>
         </FormGroup>
         <div class="flex items-center justify-end mt-4">
           <Link
