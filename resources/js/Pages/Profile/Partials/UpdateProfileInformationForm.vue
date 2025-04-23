@@ -1,9 +1,11 @@
 <script setup>
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+// Components - Forms
+import InputLabel from '@/Components/Forms/InputLabel.vue';
+import TextInput from '@/Components/Forms/TextInput.vue';
+import InputError from '@/Components/Forms/InputError.vue';
+// Components - Buttons
+import PrimaryButton from '@/Components/Buttons/PrimaryButton.vue';
 
 defineProps({
     mustVerifyEmail: {
@@ -35,7 +37,6 @@ const form = useForm({
         <form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
             <div>
                 <InputLabel for="name" value="Name" />
-
                 <TextInput
                     id="name"
                     type="text"
@@ -45,13 +46,10 @@ const form = useForm({
                     autofocus
                     autocomplete="name"
                 />
-
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
-
             <div>
                 <InputLabel for="email" value="Email" />
-
                 <TextInput
                     id="email"
                     type="email"
@@ -60,10 +58,8 @@ const form = useForm({
                     required
                     autocomplete="username"
                 />
-
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
-
             <div v-if="mustVerifyEmail && user.email_verified_at === null">
                 <p class="text-sm mt-2 text-gray-800">
                     Your email address is unverified.
@@ -76,7 +72,6 @@ const form = useForm({
                         Click here to re-send the verification email.
                     </Link>
                 </p>
-
                 <div
                     v-show="status === 'verification-link-sent'"
                     class="mt-2 font-medium text-sm text-green-600"
@@ -84,10 +79,8 @@ const form = useForm({
                     A new verification link has been sent to your email address.
                 </div>
             </div>
-
             <div class="flex items-center gap-4">
                 <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
-
                 <Transition
                     enter-active-class="transition ease-in-out"
                     enter-from-class="opacity-0"
