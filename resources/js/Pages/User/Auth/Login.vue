@@ -72,16 +72,20 @@ const submit = () => {
         <FormGroup>
           <label class="flex items-center">
             <Checkbox name="remember" v-model:checked="form.remember" />
-            <span class="ms-2 text-sm text-gray-600 dark:text-white">Remember me</span>
+            <span class="ms-2 text-sm text-gray-600 dark:text-white"
+              >Remember me</span
+            >
           </label>
         </FormGroup>
         <FormGroup>
-            <PrimaryButton
-              :class="{ 'opacity-25': form.processing }"
-              :disabled="form.processing"
-            >
-              Log in
-            </PrimaryButton>
+          <PrimaryButton
+            buttonActionType="submit"
+            buttonType="primary"
+            :class="{ 'opacity-25': form.processing }"
+            :disabled="form.processing"
+          >
+            Log in
+          </PrimaryButton>
         </FormGroup>
         <div class="flex items-center justify-end mt-4">
           <Link
