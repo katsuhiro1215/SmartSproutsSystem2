@@ -1,6 +1,7 @@
 <script setup>
-import AdminAuthenticatedLayout from '@/Layouts/AdminAuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+// Layouts
+import AdminAuthenticatedLayout from '@/Layouts/AdminAuthenticatedLayout.vue';
 </script>
 
 <template>

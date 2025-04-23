@@ -1,90 +1,105 @@
 <script setup>
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from "@inertiajs/vue3";
+// Layouts
+import GuestLayout from "@/Layouts/GuestLayout.vue";
+// Components - Forms
+import FormGroup from "@/Components/Forms/FormGroup.vue";
+import InputLabel from "@/Components/Forms/InputLabel.vue";
+import TextInput from "@/Components/Forms/TextInput.vue";
+import InputError from "@/Components/Forms/InputError.vue";
+// Components - Buttons
+import PrimaryButton from "@/Components/Buttons/PrimaryButton.vue";
 
 const form = useForm({
-    username: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
+  username: "",
+  email: "",
+  password: "",
+  password_confirmation: "",
 });
 
 const submit = () => {
-    form.post(route('user.register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
-    });
+  form.post(route("user.register"), {
+    onFinish: () => form.reset("password", "password_confirmation"),
+  });
 };
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Register" />
+  <GuestLayout>
+    <Head title="Register" />
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="username" value="Username" />
-                <TextInput
-                    id="username"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.username"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.username" />
-            </div>
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-            <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
-            </div>
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    :href="route('user.login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Already registered?
-                </Link>
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+    <h2 class="text-center dark:text-white my-4">Register</h2>
+    <form @submit.prevent="submit">
+      <div class="space-y-4">
+        <FormGroup>
+          <InputLabel for="username" value="Username" required />
+          <TextInput
+            id="username"
+            type="text"
+            class="mt-1 block w-full"
+            v-model="form.username"
+            required
+            autofocus
+            autocomplete="username"
+          />
+          <InputError class="mt-2" :message="form.errors.username" />
+        </FormGroup>
+        <FormGroup>
+          <InputLabel for="email" value="Email" required />
+          <TextInput
+            id="email"
+            type="email"
+            class="mt-1 block w-full"
+            v-model="form.email"
+            required
+            autocomplete="username"
+          />
+          <InputError class="mt-2" :message="form.errors.email" />
+        </FormGroup>
+        <FormGroup>
+          <InputLabel for="password" value="Password" required />
+          <TextInput
+            id="password"
+            type="password"
+            class="mt-1 block w-full"
+            v-model="form.password"
+            required
+            autocomplete="new-password"
+          />
+          <InputError class="mt-2" :message="form.errors.password" />
+        </FormGroup>
+        <FormGroup>
+          <InputLabel for="password_confirmation" value="Confirm Password" required />
+          <TextInput
+            id="password_confirmation"
+            type="password"
+            class="mt-1 block w-full"
+            v-model="form.password_confirmation"
+            required
+            autocomplete="new-password"
+          />
+          <InputError
+            class="mt-2"
+            :message="form.errors.password_confirmation"
+          />
+        </FormGroup>
+        <FormGroup>
+            <PrimaryButton
+              :class="{ 'opacity-25': form.processing }"
+              :disabled="form.processing"
+            >
+              Register
+            </PrimaryButton>
+        </FormGroup>
+        <div class="flex items-center justify-end mt-4">
+          <Link
+            :href="route('user.login')"
+            class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:text-white dark:focus:ring-offset-gray-800"
+          >
+            Already registered?
+          </Link>
+        </div>
+      </div>
+    </form>
+  </GuestLayout>
 </template>
