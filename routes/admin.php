@@ -1,20 +1,23 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\SettingController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Inertia\Inertia;
 
 require __DIR__ . '/admin_auth.php';
 
 Route::middleware(['auth:admins', 'verified'])->group(function () {
+  Route::controller(DashboardController::class)->prefix('dashboard')->group(function () {
+    Route::get('/', 'index')->name('dashboard');
+  });
   
-  Route::get('/dashboard', function () {
-    return Inertia::render('Admin/AdminDashboard');
-  })->name('dashboard');
+  // Setting
+  Route::controller(SettingController::class)->prefix('setting')->group(function () {
+    Route::get('/', 'index')->name('setting.index');
+  });
 
-  Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-  Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-  Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+  require __DIR__ . '/admin/admin.php';
 });
 
