@@ -4,7 +4,7 @@ import NavLink from '@/Components/NavLink.vue';
 const defaultMenuItems = [
   { name: 'home', route: 'admin.dashboard', label: 'ホーム', icon: '/upload/house.png' },
   { name: 'user', route: 'admin.dashboard', label: '顧客', icon: '/upload/family.png' },
-  { name: 'admin', route: 'admin.dashboard', label: '従業員', icon: '/upload/employees.png' },
+  { name: 'admin', route: 'admin.employee.index', label: '従業員', icon: '/upload/employees.png' },
   { name: 'store', route: 'admin.dashboard', label: '店舗', icon: '/upload/store.png' },
   { name: 'class', route: 'admin.dashboard', label: 'クラス', icon: '/upload/sports.png' },
   { name: 'event', route: 'admin.dashboard', label: 'イベント', icon: '/upload/event.png' },
@@ -15,7 +15,7 @@ const defaultMenuItems = [
   { name: 'questionnaire', route: 'admin.dashboard', label: 'アンケート', icon: '/upload/note.png' },
   { name: 'contact', route: 'admin.dashboard', label: 'お問い合わせ', icon: '/upload/email.png' },
   { name: 'widget', route: 'admin.dashboard', label: 'ウィジェット', icon: '/upload/menu.png' },
-  { name: 'settings', route: 'admin.dashboard', label: '設定', icon: '/upload/settings.png' },
+  { name: 'settings', route: 'admin.setting.index', label: '設定', icon: '/upload/settings.png' },
 ];
 </script>
 

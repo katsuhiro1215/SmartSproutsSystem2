@@ -5,15 +5,27 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
 use App\Models\Admin;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AdminController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // 1ページあたりの表示件数 (デフォルトは20件)
+        $perPage = $request->input('per_page', 20);
+
+        // adminProfileも一緒に取得
+        $admins = Admin::with('adminProfile')->admins()->paginate($perPage);
+        $expiredAdmins = Admin::with('adminProfile')->admins()->onlyTrashed()->paginate($perPage);
+
+        return Inertia::render('Admin/Admins/Index', [
+            'admins' => $admins,
+            'expiredAdmins' => $expiredAdmins,
+        ]);
     }
 
     /**

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email', 255)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('role', 20)->comment('Owner', 'SuperAdmin, Admin, SubAdmin, Manager, Employee', 'Instructor');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

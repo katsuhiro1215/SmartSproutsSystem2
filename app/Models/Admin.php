@@ -23,6 +23,7 @@ class Admin extends Authenticatable
         'username',
         'email',
         'password',
+        'role'
     ];
 
     /**
@@ -48,5 +49,46 @@ class Admin extends Authenticatable
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPasswordNotification($token));
+    }
+
+    // Relationships
+    public function adminProfile()
+    {
+        return $this->hasOne(AdminProfile::class);
+    }
+
+    public function adminAddresses()
+    {
+        return $this->hasMany(AdminAddress::class);
+    }
+
+    public function adminEnrollment()
+    {
+        return $this->hasOne(AdminEnrollment::class);
+    }
+
+    // Scopes
+    // Owner
+    public function scopeOwners($query)
+    {
+        return $query->whereIn('role', ['Owner']);
+    }
+
+    // Admin (管理者)
+    public function scopeAdmins($query)
+    {
+        return $query->whereIn('role', ['SuperAdmin', 'Admin', 'SubAdmin']);
+    }
+
+    // Employee (従業員)
+    public function scopeEmployees($query)
+    {
+        return $query->whereIn('role', ['Manager', 'Employee', 'Contract', 'PartTime']);
+    }
+
+    // その他 (外部講師など)
+    public function scopeOthers($query)
+    {
+        return $query->whereNotIn('role', ['Owner', 'SuperAdmin', 'Admin', 'SubAdmin', 'Manager', 'Employee', 'Contract', 'PartTime']);
     }
 }
