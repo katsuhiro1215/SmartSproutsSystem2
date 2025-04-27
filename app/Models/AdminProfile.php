@@ -9,6 +9,8 @@ class AdminProfile extends Model
 {
     use HasFactory;
 
+    protected $table = 'admin_profiles';
+
     protected $fillable = [
         'admin_id',
         'lastname',

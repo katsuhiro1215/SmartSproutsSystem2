@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Admin;
 use Illuminate\Validation\Rules;
 
-class AdminRequest extends FormRequest
+class StoreAdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,8 +26,8 @@ class AdminRequest extends FormRequest
         return [
             'username' => ['required', 'string', 'max:30'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:' . Admin::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'regex:/^(?=.*[a-zA-Z])(?=.*\d).{8,}$/',
+            'password' => ['required', 'confirmed', Rules\Password::defaults(), 'regex:/^(?=.*[a-zA-Z])(?=.*\d).{8,}$/'],
+            'role' => ['required', 'string', 'in:SuperAdmin,Admin,SubAdmin'],
         ];
     }
 }

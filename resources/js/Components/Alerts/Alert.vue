@@ -35,7 +35,7 @@ const cancel = () => {
     >
       <div
         v-if="isVisible"
-        class="min-w-80 md:w-2/3 lg:w-1/2 flex items-center justify-center flex-col bg-white border-8 border-red-400 p-5 rounded-md shadow-lg z-20 text-center"
+        class="min-w-80 md:w-2/3 lg:w-1/2 flex items-center justify-center flex-col bg-white border-8 border-red-400 px-5 py-20 rounded-md shadow-lg z-20 text-center dark:bg-gray-800 dark:text-white"
       >
         <h3 class="text-xl md:text-2xl font-bold mb-2">
           本当に削除しても良いですか？

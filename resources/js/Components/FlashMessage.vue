@@ -1,14 +1,16 @@
 <script setup>
-import { ref, watchEffect } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { ref, watchEffect } from "vue";
+import { usePage } from "@inertiajs/vue3";
 
 const $page = usePage();
 const isVisible = ref(true);
 
 watchEffect(() => {
   if ($page.props.flash.success || $page.props.flash.error) {
+    console.log("Flash message detected:", $page.props.flash);
     isVisible.value = true;
     setTimeout(() => {
+      console.log("Flash message detected:", $page.props.flash);
       isVisible.value = false;
     }, 3000);
   }

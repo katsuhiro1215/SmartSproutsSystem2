@@ -9,6 +9,8 @@ class AdminEnrollment extends Model
 {
     use HasFactory;
 
+    protected $table = 'admin_enrollments';
+
     protected $fillable = [
         'admin_id',
         'enrollment_date',

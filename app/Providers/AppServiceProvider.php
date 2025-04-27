@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
             config(['session.cookie' => config('session.cookie_admin')]);
         }
 
-        Validator::extend('zipcode_format', function ($attribute, $value, $parameters, $validator) {
+        Validator::extend('postalcode_format', function ($attribute, $value, $parameters, $validator) {
             return preg_match('/^\d{3}-?\d{4}$/', $value);
         });
 

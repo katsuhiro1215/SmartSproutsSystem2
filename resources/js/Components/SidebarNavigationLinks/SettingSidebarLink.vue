@@ -8,6 +8,12 @@ const menuItems = [
     icon: "/upload/family.png",
     route: "admin.setting.index",
   },
+    {
+    name: "organization.index",
+    label: "企業",
+    icon: "/upload/family.png",
+    route: "admin.organization.index",
+  },
   {
     name: "admin.index",
     label: "管理者",
