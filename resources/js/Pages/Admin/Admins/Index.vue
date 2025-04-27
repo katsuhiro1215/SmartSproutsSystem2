@@ -11,21 +11,27 @@ import PageDescription from "@/Components/PageDescription.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import Card from "@/Components/Cards/Card.vue";
 import Avatar from "@/Components/Avatar.vue";
+import Alert from "@/Components/Alerts/Alert.vue";
 import FlashMessage from "@/Components/FlashMessage.vue";
 import ListView from "@/Components/ListView.vue";
 import GridView from "@/Components/GridView.vue";
 // Components - Buttons
 import PrimaryButton from "@/Components/Buttons/PrimaryButton.vue";
+import DangerButton from "@/Components/Buttons/DangerButton.vue";
 import BackButton from "@/Components/Buttons/BackButton.vue";
 //icon
+import Plus from "vue-material-design-icons/Plus.vue";
+import Back from "vue-material-design-icons/ArrowLeft.vue";
+import TrashCanOutline from "vue-material-design-icons/TrashCanOutline.vue";
+import NoteEdit from "vue-material-design-icons/NoteEdit.vue";
+import Restore from "vue-material-design-icons/Restore.vue";
 import ViewList from "vue-material-design-icons/ViewList.vue";
 import DotsGrid from "vue-material-design-icons/DotsGrid.vue";
 import EyeOutline from "vue-material-design-icons/EyeOutline.vue";
-import Back from "vue-material-design-icons/ArrowLeft.vue";
 
 const props = defineProps({
   admins: Object,
-  expiredAdmins: Object,
+  deletedAdmins: Object,
 });
 
 // Lifecycle
@@ -38,7 +44,7 @@ const form = useForm({});
 // Tabs
 const tabs = [
   { name: "admins", label: "管理者一覧" },
-  { name: "expiredAdmins", label: "削除済管理者一覧" },
+  { name: "deletedAdmins", label: "削除済管理者一覧" },
 ];
 const activeTab = ref("admins");
 const viewMode = ref("list");
@@ -54,6 +60,27 @@ const currentAdmins = computed(() => {
 // 復活処理
 const restoreAdmin = (id) => {
   form.put(route("admin.admin.restore", id));
+};
+
+// 削除処理 (削除、完全削除) --- アラート表示
+const showAlert = ref(false);
+const currentEntity = ref(null);
+const entityType = ref("");
+const requestDeletion = (entity, type) => {
+  currentEntity.value = entity;
+  entityType.value = type;
+  showAlert.value = true;
+};
+const confirmDeletion = () => {
+  if (entityType.value === "delete") {
+    form.delete(route("admin.admin.destroy", currentEntity.value.id));
+  } else if (entityType.value === "forceDelete") {
+    form.delete(route("admin.admin.forceDelete", currentEntity.value.id));
+  }
+  showAlert.value = false;
+};
+const cancelDeletion = () => {
+  showAlert.value = false;
 };
 </script>
 
@@ -75,6 +102,13 @@ const restoreAdmin = (id) => {
     </template>
     <!-- Flash Message -->
     <FlashMessage />
+    <!-- Alert -->
+    <Alert
+      :isVisible="showAlert"
+      :message="`管理者を削除しますか？`"
+      @confirm="confirmDeletion"
+      @cancel="cancelDeletion"
+    />
     <!-- Main Contents -->
     <SettingLayout>
       <div class="flex justify-between p-5">
@@ -85,7 +119,12 @@ const restoreAdmin = (id) => {
           />
         </div>
         <div class="flex justify-end items-center gap-2">
-          <BackButton :href="route('admin.dashboard')"><Back />ホームへ戻る</BackButton>
+          <PrimaryButton :href="route('admin.admin.create')" buttonType="indigo"
+            ><Plus />管理者新規作成</PrimaryButton
+          >
+          <BackButton :href="route('admin.dashboard')"
+            ><Back />ホームへ戻る</BackButton
+          >
         </div>
       </div>
       <div class="w-full flex flex-col lg:flex-row gap-5 p-5">
@@ -160,11 +199,15 @@ const restoreAdmin = (id) => {
                           >
                             <Avatar
                               :src="
-                                item.admin_profile.admin_photo_path
+                                item.admin_profile
                                   ? item.admin_profile.admin_photo_path
                                   : '/upload/user.png'
                               "
-                              :alt="item.admin_profile.full_name"
+                              :alt="
+                                item.admin_profile
+                                  ? item.admin_profile.full_name
+                                  : ''
+                              "
                               size="lg"
                               class="rounded-full"
                             />
@@ -178,24 +221,71 @@ const restoreAdmin = (id) => {
                           <td
                             class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
-                            {{ item.admin_profile.lastname }}
-                            {{ item.admin_profile.firstname }}
+                            {{
+                              item.admin_profile
+                                ? item.admin_profile.lastname
+                                : ""
+                            }}
+                            {{
+                              item.admin_profile
+                                ? item.admin_profile.firstname
+                                : ""
+                            }}
                           </td>
                           <td
                             class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
-                            {{ item.admin_profile.mobile_number }}
+                            {{
+                              item.admin_profile
+                                ? item.admin_profile.mobile_number
+                                : ""
+                            }}
                           </td>
                           <td
-                            class="flex gap-3 p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
-                            <PrimaryButton
-                              :href="route('admin.admin.show', item.id)"
-                              buttonType="info"
-                              class="size-10"
-                            >
-                              <EyeOutline />
-                            </PrimaryButton>
+                            <div class="flex gap-3">
+                              <PrimaryButton
+                                v-if="activeTab === 'admins'"
+                                :href="route('admin.admin.show', item.id)"
+                                buttonType="info"
+                                class="size-10"
+                              >
+                                <EyeOutline />
+                              </PrimaryButton>
+                              <PrimaryButton
+                                v-if="activeTab === 'admins'"
+                                :href="route('admin.admin.edit', item.id)"
+                                buttonType="warning"
+                                class="size-10"
+                              >
+                                <NoteEdit />
+                              </PrimaryButton>
+                              <DangerButton
+                                v-if="activeTab === 'admins'"
+                                @click="requestDeletion(item, 'delete')"
+                                buttonType="danger"
+                                class="size-10"
+                              >
+                                <TrashCanOutline />
+                              </DangerButton>
+                              <PrimaryButton
+                                v-if="activeTab === 'deletedAdmins'"
+                                @click="restoreUser(item.id)"
+                                buttonType="success"
+                              >
+                                <Restore class="mr-2" />
+                                <span>復活</span>
+                              </PrimaryButton>
+                              <DangerButton
+                                v-if="activeTab === 'deletedAdmins'"
+                                @click="requestDeletion(item, 'forceDelete')"
+                                buttonType="danger"
+                              >
+                                <TrashCanOutline class="mr-2" />
+                                <span>完全削除</span>
+                              </DangerButton>
+                            </div>
                           </td>
                         </template>
                       </ListView>
@@ -208,11 +298,15 @@ const restoreAdmin = (id) => {
                             <div class="flex justify-center">
                               <Avatar
                                 :src="
-                                  item.admin_profile.admin_photo_path
+                                  item.admin_profile
                                     ? item.admin_profile.admin_photo_path
                                     : '/upload/user.png'
                                 "
-                                :alt="item.admin_profile.full_name"
+                                :alt="
+                                  item.admin_profile
+                                    ? item.admin_profile.full_name
+                                    : ''
+                                "
                                 size="lg"
                                 class="rounded-full"
                               />
@@ -230,22 +324,67 @@ const restoreAdmin = (id) => {
                             <h4
                               class="text-sm text-gray-500 dark:text-gray-400 text-center"
                             >
-                              {{ item.admin_profile.lastname }}
-                              {{ item.admin_profile.firstname }}
+                              {{
+                                item.admin_profile
+                                  ? item.admin_profile.lastname
+                                  : ""
+                              }}
+                              {{
+                                item.admin_profile
+                                  ? item.admin_profile.firstname
+                                  : ""
+                              }}
                             </h4>
                             <p
                               class="text-sm text-gray-500 dark:text-gray-400 text-center"
                             >
-                              {{ item.admin_profile.mobile_number }}
+                              {{
+                                item.admin_profile
+                                  ? item.admin_profile.mobile_number
+                                  : ""
+                              }}
                             </p>
                             <div class="flex justify-center gap-3 mt-4">
                               <PrimaryButton
+                                v-if="activeTab === 'admins'"
                                 :href="route('admin.admin.show', item.id)"
                                 buttonType="info"
                                 class="size-10"
                               >
                                 <EyeOutline />
                               </PrimaryButton>
+                              <PrimaryButton
+                                v-if="activeTab === 'admins'"
+                                :href="route('admin.admin.edit', item.id)"
+                                buttonType="warning"
+                                class="size-10"
+                              >
+                                <NoteEdit />
+                              </PrimaryButton>
+                              <DangerButton
+                                v-if="activeTab === 'admins'"
+                                @click="requestDeletion(item, 'delete')"
+                                buttonType="danger"
+                                class="size-10"
+                              >
+                                <TrashCanOutline />
+                              </DangerButton>
+                              <PrimaryButton
+                                v-if="activeTab === 'deletedAdmins'"
+                                @click="restoreUser(item.id)"
+                                buttonType="success"
+                              >
+                                <Restore class="mr-2" />
+                                <span>復活</span>
+                              </PrimaryButton>
+                              <DangerButton
+                                v-if="activeTab === 'deletedAdmins'"
+                                @click="requestDeletion(item, 'forceDelete')"
+                                buttonType="danger"
+                              >
+                                <TrashCanOutline class="mr-2" />
+                                <span>完全削除</span>
+                              </DangerButton>
                             </div>
                           </div>
                         </template>

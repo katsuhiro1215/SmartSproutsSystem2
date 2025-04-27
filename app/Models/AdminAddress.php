@@ -9,6 +9,8 @@ class AdminAddress extends Model
 {
     use HasFactory;
 
+    protected $table = 'admin_addresses';
+    
     protected $fillable = [
         'admin_id',
         'postal_code',

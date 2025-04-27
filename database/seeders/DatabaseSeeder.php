@@ -16,6 +16,6 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminSeeder::class);
         $this->call(AdminProfileSeeder::class);
         $this->call(AdminAddressSeeder::class);
-        
+        $this->call(OrganizationSeeder::class);
     }
 }

@@ -14,6 +14,7 @@ class Admin extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
+    protected $table = 'admins';
     /**
      * The attributes that are mass assignable.
      *
@@ -65,6 +66,11 @@ class Admin extends Authenticatable
     public function adminEnrollment()
     {
         return $this->hasOne(AdminEnrollment::class);
+    }
+
+    public function organizations()
+    {
+        return $this->belongsToMany(Organization::class, 'admin_organization', 'admin_id', 'organization_id');
     }
 
     // Scopes

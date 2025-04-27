@@ -11,7 +11,7 @@ import PageDescription from "@/Components/PageDescription.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import Card from "@/Components/Cards/Card.vue";
 import Avatar from "@/Components/Avatar.vue";
-import Alert from "@/Components/Alert.vue";
+import Alert from "@/Components/Alerts/Alert.vue";
 import FlashMessage from "@/Components/FlashMessage.vue";
 import ListView from "@/Components/ListView.vue";
 import GridView from "@/Components/GridView.vue";

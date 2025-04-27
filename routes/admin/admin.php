@@ -22,7 +22,17 @@ Route::prefix('owner')->name('owner.')->controller(OwnerController::class)->grou
 // 管理者管理
 Route::prefix('admin')->name('admin.')->controller(AdminController::class)->group(function () {
   Route::get('index', 'index')->name('index');
+  Route::get('create', 'create')->name('create');
+  Route::post('/', 'store')->name('store');
   Route::get('{admin}/show', 'show')->name('show');
+  Route::get('{admin}/edit', 'edit')->name('edit');
+  Route::put('{admin}', 'update')->name('update');
+  Route::delete('{admin}', 'destroy')->name('destroy');
+  // 復活 / 完全削除
+  Route::put('{id}/restore', 'restore')->name('restore');
+  Route::delete('{id}/forceDelete', 'forceDelete')->name('forceDelete');
+  // API
+  Route::get('/email/checkEmail', 'checkEmail')->name('checkEmail');
 });
 
 // 従業員管理

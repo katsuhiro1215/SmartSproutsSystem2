@@ -19,6 +19,8 @@
     },
     "dependencies": {
         "@mdi/js": "^7.4.47",
-        "vue-material-design-icons": "^5.3.1"
+        "vue-material-design-icons": "^5.3.1",
+        "yubinbango-core": "^0.6.3",
+        "yubinbango-core2": "^0.6.3"
     }
 }
