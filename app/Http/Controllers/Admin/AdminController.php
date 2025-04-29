@@ -20,7 +20,10 @@ use Inertia\Response;
 class AdminController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * 管理者一覧画面
+     * 
+     * @param Request $request
+     * @return \Inertia\Response
      */
     public function index(Request $request): Response
     {
@@ -38,7 +41,9 @@ class AdminController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * 管理者作成画面
+     * 
+     * @return \Inertia\Response
      */
     public function create(): Response
     {
@@ -58,7 +63,10 @@ class AdminController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * 管理者登録処理
+     * 
+     * @param StoreAdminRequest $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreAdminRequest $request): RedirectResponse
     {
@@ -98,6 +106,9 @@ class AdminController extends Controller
 
     /**
      * 管理者詳細画面
+     * 
+     * @param Admin $admin
+     * @return \Inertia\Response
      */
     public function show(Admin $admin): Response
     {
@@ -118,6 +129,9 @@ class AdminController extends Controller
 
     /**
      * 管理者編集画面
+     * 
+     * @param Admin $admin
+     * @return \Inertia\Response
      */
     public function edit(Admin $admin): Response
     {
@@ -139,6 +153,10 @@ class AdminController extends Controller
 
     /**
      * 管理者更新処理
+     * 
+     * @param UpdateAdminRequest $request
+     * @param Admin $admin
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UpdateAdminRequest $request, Admin $admin): RedirectResponse
     {
@@ -176,6 +194,9 @@ class AdminController extends Controller
 
     /**
      * 管理者削除処理
+     * 
+     * @param Admin $admin
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Admin $admin): RedirectResponse
     {
@@ -202,6 +223,9 @@ class AdminController extends Controller
 
     /**
      * 管理者復活処理
+     * 
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function restore($id)
     {
@@ -235,6 +259,9 @@ class AdminController extends Controller
 
     /**
      * 管理者完全削除処理
+     * 
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function forceDelete($id)
     {

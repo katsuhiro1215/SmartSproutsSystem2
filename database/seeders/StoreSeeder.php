@@ -1,0 +1,123 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class StoreSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        DB::table('stores')->insert([
+            [
+                'organization_id' => 2,
+                'name' => 'Shuplay体操教室',
+                'type' => '本店',
+                'code' => 'SPGYM',
+                'theme_color' => '#FF5733',
+                'description' => 'Shuplayの体操に特化した教室です。',
+                'email' => 'info@shuplay.com',
+                'store_photo_path' => null,
+                'store_logo_path' => null,
+                'postalcode' => '6610976',
+                'prefecture' => '兵庫県',
+                'city' => '尼崎市',
+                'address1' => '潮江',
+                'address2' => '1丁目16番1号 アミング潮江ウエスト二番館201-6',
+                'phone_number' => '0649506939',
+                'fax_number' => null,
+                'status' => 1,
+                'established_date' => '2023-05-01',
+                'website' => 'https://shuplay.com/',
+                'facebook' => null,
+                'twitter' => null,
+                'instagram' => 'https://www.instagram.com/shuplay2023/',
+                'youtube' => null,
+                'line' => 'https://line.me/R/ti/p/@579ifezz',
+            ],
+            [
+                'organization_id' => 2,
+                'name' => 'Shuplayヨガ・ピラティス教室',
+                'type' => '支店',
+                'code' => 'SPDANCE',
+                'theme_color' => '#33FF57',
+                'description' => 'Shuplayのヨガ・ピラティスに特化した教室です。',
+                'email' => 'yoga@shuplay.com',
+                'store_photo_path' => null,
+                'store_logo_path' => null,
+                'postalcode' => '6610976',
+                'prefecture' => '兵庫県',
+                'city' => '尼崎市',
+                'address1' => '潮江',
+                'address2' => '1丁目16番1号 アミング潮江ウエスト二番館201-6',
+                'phone_number' => '0649506939',
+                'fax_number' => null,
+                'status' => 1,
+                'established_date' => '2024-09-01',
+                'website' => null,
+                'facebook' => null,
+                'twitter' => null,
+                'instagram' => null,
+                'youtube' => null,
+                'line' => null,
+            ],
+            [
+                'organization_id' => 2,
+                'name' => 'Shuplayプログラミング教室',
+                'type' => '支店',
+                'code' => 'SPPROG',
+                'theme_color' => '#3357FF',
+                'description' => 'Shuplayのプログラミングに特化した教室です。',
+                'email' => 'progam@shuplay.com',
+                'store_photo_path' => null,
+                'store_logo_path' => null,
+                'postalcode' => '6610976',
+                'prefecture' => '兵庫県',
+                'city' => '尼崎市',
+                'address1' => '潮江',
+                'address2' => '1丁目16番1号 アミング潮江ウエスト二番館201-6',
+                'phone_number' => '0649506939',
+                'fax_number' => null,
+                'status' => 1,
+                'established_date' => '2024-09-01',
+                'website' => null,
+                'facebook' => null,
+                'twitter' => null,
+                'instagram' => null,
+                'youtube' => null,
+                'line' => null,
+            ],
+            [
+                'organization_id' => 2,
+                'name' => 'Shuplay音楽教室',
+                'type' => '支店',
+                'code' => 'SPMUSIC',
+                'theme_color' => '#FF33A1',
+                'description' => 'Shuplayの音楽に特化した教室です。',
+                'email' => 'dance@shuplay.com',
+                'store_photo_path' => null,
+                'store_logo_path' => null,
+                'postalcode' => '6610976',
+                'prefecture' => '兵庫県',
+                'city' => '尼崎市',
+                'address1' => '潮江',
+                'address2' => '1丁目16番1号 アミング潮江ウエスト二番館201-6',
+                'phone_number' => '0649506939',
+                'fax_number' => null,
+                'status' => 1,
+                'established_date' => '2024-09-01',
+                'website' => null,
+                'facebook' => null,
+                'twitter' => null,
+                'instagram' => null,
+                'youtube' => null,
+                'line' => null,
+            ],
+        ]);
+    }
+}

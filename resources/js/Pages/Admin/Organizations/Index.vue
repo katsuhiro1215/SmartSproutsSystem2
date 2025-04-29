@@ -8,6 +8,7 @@ import PageSubTitle from "@/Components/PageSubTitle.vue";
 import PageDescription from "@/Components/PageDescription.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import Card from "@/Components/Cards/Card.vue";
+import Avatar from "@/Components/Avatar.vue";
 import FlashMessage from "@/Components/FlashMessage.vue";
 // Components - Buttons
 import PrimaryButton from "@/Components/Buttons/PrimaryButton.vue";
@@ -16,7 +17,6 @@ import BackButton from "@/Components/Buttons/BackButton.vue";
 import Plus from "vue-material-design-icons/Plus.vue";
 import Back from "vue-material-design-icons/ArrowLeft.vue";
 import NoteEdit from "vue-material-design-icons/NoteEdit.vue";
-import Avatar from "@/Components/Avatar.vue";
 import EyeOutline from "vue-material-design-icons/EyeOutline.vue";
 import Badge from "@/Components/Badge.vue";
 

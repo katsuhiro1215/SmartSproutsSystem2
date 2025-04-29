@@ -106,11 +106,12 @@ class OrganizationController extends Controller
      */
     public function show(Organization $organization): Response
     {
-        $organization->full_address = $organization->address1 . ' ' .
+        // 住所の結合
+        $organization->full_address = $organization->prefecture . ' ' .
+            $organization->city . ' ' .
             $organization->address2 . ' ' .
-            $organization->address3 . ' ' .
-            $organization->address4;
-
+            $organization->address1;
+        // 郵便番号のハイフンを追加
         $organization->postalcode = substr($organization->postalcode, 0, 3) . '-' . substr($organization->postalcode, 3);
 
         $admins = $organization->admins;
