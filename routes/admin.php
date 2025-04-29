@@ -25,5 +25,6 @@ Route::middleware(['auth:admins', 'verified'])->group(function () {
   });
 
   require __DIR__ . '/admin/admin.php';
+  require __DIR__ . '/admin/store.php';
 });
 

@@ -40,4 +40,9 @@ class Organization extends Model
     {
         return $this->belongsToMany(Admin::class, 'admin_organization', 'organization_id', 'admin_id');
     }
+
+    public function stores()
+    {
+        return $this->hasMany(Store::class);
+    }
 }

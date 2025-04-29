@@ -1,18 +1,6 @@
-import axios from "axios";
 import validationMessages from "@/Constants/validationMessages";
 
-// 組織タイプのバリデーション 必須 / 個人 or 法人
-export const validateType = (form) => {
-    if (!form.type) {
-        form.errors.type = validationMessages.common.required;
-    } else if (!["個人", "法人"].includes(form.type)) {
-        form.errors.type = validationMessages.organization.type;
-    } else {
-        delete form.errors.type;
-    }
-};
-
-// 組織名のバリデーション 必須 / 50文字以内
+// 店舗名のバリデーション 必須 / 50文字以内
 export const validateName = (form) => {
     if (!form.name) {
         form.errors.name = validationMessages.common.required;
@@ -23,25 +11,56 @@ export const validateName = (form) => {
     }
 };
 
-// 組織内容のバリデーション 必須 / 1000文字以内
+// 店舗タイプのバリデーション 必須
+export const validateType = (form) => {
+    if (!form.type) {
+        form.errors.type = validationMessages.common.required;
+    } else {
+        delete form.errors.type;
+    }
+};
+
+// 店舗コードのバリデーション 必須 / 20文字以内
+export const validateCode = (form) => {
+    if (!form.code) {
+        form.errors.code = validationMessages.common.required;
+    } else if (form.code.length > 20) {
+        form.errors.code = validationMessages.store.code;
+    } else {
+        delete form.errors.code;
+    }
+};
+
+// 店舗テーマカラーのバリデーション 必須 / 7桁の16進数
+export const validateThemeColor = (form) => {
+    if (!form.theme_color) {
+        form.errors.theme_color = validationMessages.common.required;
+    } else if (!/^#[0-9A-F]{6}$/i.test(form.theme_color)) {
+        form.errors.theme_color = validationMessages.store.theme_color;
+    } else {
+        delete form.errors.theme_color;
+    }
+};
+
+// 店舗内容のバリデーション 必須 / 1000文字以内
 export const validateDescription = (form) => {
     if (!form.description) {
         form.errors.description = validationMessages.common.required;
     } else if (form.description.length > 1000) {
-        form.errors.description = validationMessages.organization.description;
+        form.errors.description = validationMessages.courseCategory.description;
     } else {
         delete form.errors.description;
     }
 };
 
-const checkEmailUniqueness = async (form, organizationId = null) => {
+// 店舗メールアドレスのバリデーション 必須 / メールアドレス形式
+const checkEmailUniqueness = async (form, storeId = null) => {
     if (form.email) {
         try {
-            const response = await axios.get(
-                route("admin.organization.checkEmail"),
+            const response = await axios.get(route("admin.store.checkEmail"),
                 {
                     params: { email: form.email },
-                    id: organizationId, // 編集時は自身のIDを無視
+                    id: storeId, // 編集時は自身のIDを無視
                 }
             );
             if (response.data.exists) {
@@ -55,7 +74,7 @@ const checkEmailUniqueness = async (form, organizationId = null) => {
     }
 };
 
-export const validateEmail = async (form, organizationId = null) => {
+export const validateEmail = async (form, storeId = null) => {
     const emailPattern = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
     if (!form.email) {
         form.errors.email = validationMessages.common.required;
@@ -65,7 +84,7 @@ export const validateEmail = async (form, organizationId = null) => {
         delete form.errors.email;
 
         // メールアドレスの形式が正しい場合のみユニークチェックを実行
-        await checkEmailUniqueness(form, organizationId);
+        await checkEmailUniqueness(form, storeId);
     }
 };
 
@@ -156,6 +175,27 @@ export const validateFaxNumber = (form) => {
     }
 };
 
+// ステータスのバリデーション 選択必須
+export const validateStatus = (form) => {
+    if (form.status === null || form.status === undefined) {
+        form.errors.status = validationMessages.common.required;
+    } else {
+        delete form.errors.status;
+    }
+};
+
+// 設立日のバリデーション 必須 / 正しい日付形式（YYYY-MM-DD）
+export const validateEstablishedDate = (form) => {
+    if (!form.established_date) {
+        form.errors.established_date = validationMessages.common.required;
+    } else if (!/^\d{4}-\d{2}-\d{2}$/.test(form.established_date)) {
+        form.errors.established_date =
+            validationMessages.common.established_date;
+    } else {
+        delete form.errors.established_date;
+    }
+};
+
 // Website URLのバリデーション URL形式
 export const validateWebsiteUrl = (form) => {
     if (
@@ -232,31 +272,11 @@ export const validateLineUrl = (form) => {
     }
 };
 
-// 設立日のバリデーション 正しい日付形式（YYYY-MM-DD）
-export const validateEstablishedDate = (form) => {
-    if (
-        form.established_date &&
-        !/^\d{4}-\d{2}-\d{2}$/.test(form.established_date)
-    ) {
-        form.errors.established_date =
-            validationMessages.common.established_date;
-    } else {
-        delete form.errors.established_date;
-    }
-};
-
-// ステータスのバリデーション 選択必須
-export const validateStatus = (form) => {
-    if (form.status === null || form.status === undefined) {
-        form.errors.status = validationMessages.common.required;
-    } else {
-        delete form.errors.status;
-    }
-};
-
 export const validateAllFields = (form) => {
-    validateType(form);
     validateName(form);
+    validateType(form);
+    validateCode(form);
+    validateThemeColor(form);
     validateDescription(form);
     validateEmail(form);
     validatePostalcode(form);
@@ -266,12 +286,12 @@ export const validateAllFields = (form) => {
     validateAddress2(form);
     validatePhoneNumber(form);
     validateFaxNumber(form);
+    validateStatus(form);
+    validateEstablishedDate(form);
     validateWebsiteUrl(form);
     validateFacebookUrl(form);
     validateTwitterUrl(form);
     validateInstagramUrl(form);
     validateYoutubeUrl(form);
     validateLineUrl(form);
-    validateEstablishedDate(form);
-    validateStatus(form);
 };

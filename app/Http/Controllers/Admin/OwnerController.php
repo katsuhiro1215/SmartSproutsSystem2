@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AdminRequest;
+use App\Http\Requests\UpdateAdminRequest;
 use App\Http\Resources\AdminAddressResource;
 use App\Http\Resources\AdminProfileResource;
 use App\Models\Admin;
@@ -53,7 +53,7 @@ class OwnerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(AdminRequest $request, Admin $admin)
+    public function update(UpdateAdminRequest $request, Admin $admin)
     {
         $validatedData = $request->validated();
 
