@@ -22,7 +22,6 @@ import NoteEdit from "vue-material-design-icons/NoteEdit.vue";
 import EyeOutline from "vue-material-design-icons/EyeOutline.vue";
 import Badge from "@/Components/Badge.vue";
 
-// Props
 const props = defineProps({
   allStores: Object,
   stores: Object,
@@ -107,7 +106,7 @@ const cancelDeletion = () => {
         </div>
         <div class="flex justify-end items-center gap-2">
           <PrimaryButton :href="route('admin.store.create')" buttonType="indigo"
-            ><Plus />新規店舗作成</PrimaryButton
+            ><Plus />店舗新規作成</PrimaryButton
           >
           <BackButton :href="route('admin.dashboard')"
             ><Back />ホームへ戻る</BackButton
