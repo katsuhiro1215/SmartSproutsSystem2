@@ -1,6 +1,6 @@
 <script setup>
 import { Head, useForm } from "@inertiajs/vue3";
-import { onMounted, ref, computed } from "vue";
+import { defineProps, onMounted, ref, computed } from "vue";
 // Layouts
 import AdminAuthenticatedLayout from "@/Layouts/AdminAuthenticatedLayout.vue";
 // Components
