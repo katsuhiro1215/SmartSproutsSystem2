@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Class\ClassController;
+use App\Http\Controllers\Admin\Class\CourseCategoryController;
 use App\Http\Controllers\Admin\Class\LessonController;
 
 // Class (Dashboard)
@@ -16,3 +17,9 @@ Route::controller(LessonController::class)->prefix('lesson')->group(function () 
   Route::delete('/{lesson}/forceDelete', 'forceDelete')->name('lesson.forceDelete');
 });
 
+// CourseCategory
+Route::resource('/courseCategory', CourseCategoryController::class);
+Route::controller(CourseCategoryController::class)->prefix('courseCategory')->group(function () {
+  Route::get('/{courseCategory}/restore', 'restore')->name('courseCategory.restore');
+  Route::delete('/{courseCategory}/forceDelete', 'forceDelete')->name('courseCategory.forceDelete');
+});

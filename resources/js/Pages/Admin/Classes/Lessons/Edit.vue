@@ -134,7 +134,7 @@ const update = () => {
           :items="[
             { name: 'Home', url: route('admin.dashboard') },
             { name: 'Lesson', url: route('admin.lesson.index') },
-            { name: 'Edit', url: route('admin.lesson.edit', ['id']) },
+            { name: 'Edit', url: route('admin.lesson.edit', lesson.id) },
           ]"
         />
       </div>
@@ -147,14 +147,14 @@ const update = () => {
      <ClassLayout>
        <div class="flex justify-between p-5">
          <div class="w-1/2 flex flex-col gap-2">
-           <PageSubTitle title="レッスン新規作成画面" />
+           <PageSubTitle title="レッスン編集画面" />
            <PageDescription
-             description="レッスンを新規作成する画面です。"
+             description="レッスンを編集する画面です。"
            />
          </div>
          <div class="w-1/2 flex justify-end items-center gap-2">
            <BackButton type="button" :href="route('admin.lesson.index')"
-             ><Back />戻る</BackButton
+             ><Back />レッスン一覧へ戻る</BackButton
            >
          </div>
        </div>

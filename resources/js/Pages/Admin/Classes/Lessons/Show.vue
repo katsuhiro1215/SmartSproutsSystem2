@@ -71,12 +71,12 @@ const setActiveTab = (tab) => {
     <ClassLayout>
       <div class="flex justify-between p-5">
         <div class="flex flex-col gap-2">
-          <PageSubTitle title="店舗詳細" />
-          <PageDescription description="店舗の詳細を表示する画面です。" />
+          <PageSubTitle title="レッスン詳細" />
+          <PageDescription description="レッスンの詳細を表示する画面です。" />
         </div>
         <div class="flex justify-end items-center gap-2">
-          <BackButton :href="route('admin.store.index')"
-            ><Back />店舗一覧へ戻る</BackButton
+          <BackButton :href="route('admin.lesson.index')"
+            ><Back />レッスン一覧へ戻る</BackButton
           >
         </div>
       </div>
