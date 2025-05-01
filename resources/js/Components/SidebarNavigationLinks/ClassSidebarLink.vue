@@ -18,7 +18,7 @@ const menuItems = [
     name: "courseCategory.index",
     label: "カテゴリー",
     icon: "/upload/sports.png",
-    route: "admin.lesson.index",
+    route: "admin.courseCategory.index",
   },
   {
     name: "course.index",

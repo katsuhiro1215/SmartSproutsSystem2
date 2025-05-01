@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LessonRequest extends FormRequest
+class CourseCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,10 @@ class LessonRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'store_id' => ['required', 'integer', 'exists:stores,id'],
+            'lesson_id' => ['required', 'integer', 'exists:lessons,id'],
             'name' => ['required', 'string', 'max:50'],
             'description' => ['required', 'max:1000'],
-            'lesson_photo_path' => ['nullable', 'image', 'mimes: jpg,jpeg,png', 'max:2048'],
+            'course_category_photo_path' => ['nullable', 'image', 'mimes: jpg,jpeg,png', 'max:2048'],
             'status' => ['required', 'boolean', 'in:0,1'],
             'start_date' => ['date', 'date_format:Y-m-d'],
             'end_date' => ['date', 'date_format:Y-m-d'],
@@ -40,8 +40,8 @@ class LessonRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'name' => 'レッスン名',
-            'description' => 'レッスン内容',
+            'name' => 'コースカテゴリー名',
+            'description' => 'コースカテゴリー内容',
         ];
     }
 
@@ -53,7 +53,7 @@ class LessonRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'lesson_photo_path.mimes' => 'レッスンの画像はjpg、jpeg、png形式の画像ファイルで指定してください。',
+            'course_category_photo_path.mimes' => 'コースカテゴリーの画像はjpg、jpeg、png形式の画像ファイルで指定してください。',
         ];
     }
 }

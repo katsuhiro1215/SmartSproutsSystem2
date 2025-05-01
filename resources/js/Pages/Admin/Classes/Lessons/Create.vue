@@ -111,9 +111,7 @@ const isFormValid = computed(() => {
 
 // 登録
 const store = () => {
-  validateAllFields(form);
-
-  if (isFormValid.value) {
+    if (Object.keys(form.errors).length === 0) {
     isLoading.value = true;
     loadingText.value = "登録中";
     form.post(route("admin.lesson.store"), {
