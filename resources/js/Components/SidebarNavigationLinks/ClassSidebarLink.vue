@@ -24,7 +24,7 @@ const menuItems = [
     name: "course.index",
     label: "コース",
     icon: "/upload/sports.png",
-    route: "admin.lesson.index",
+    route: "admin.course.index",
   },
 ];
 </script>
