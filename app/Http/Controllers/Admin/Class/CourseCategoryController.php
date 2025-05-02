@@ -7,6 +7,7 @@ use App\Http\Requests\CourseCategoryRequest;
 use App\Models\CourseCategory;
 use App\Models\Lesson;
 use App\Services\ImageService;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,25 +16,30 @@ use Inertia\Response;
 
 class CourseCategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:admins');
+    }
     /**
      * コースカテゴリー一覧画面
      * @return \Inertia\Response
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         // 1ページあたりの表示件数 (デフォルトは20件) 
-        $perPage = request()->input('per_page', 20);
+        $perPage = $request->input('per_page', 20);
+
         // 全コースカテゴリー一覧
         $allCourseCategories = CourseCategory::allCourseCategories()
-            ->searchKeyword(request()->keyword)
+            ->searchKeyword($request->keyword)
             ->paginate($perPage);
         // 削除されていないコースカテゴリー一覧
         $courseCategories = CourseCategory::withoutTrashed()
-            ->searchKeyword(request()->keyword)
+            ->searchKeyword($request->keyword)
             ->paginate($perPage);
         // 削除済みコースカテゴリー一覧
         $deletedCourseCategories = CourseCategory::onlyTrashed()
-            ->searchKeyword(request()->keyword)
+            ->searchKeyword($request->keyword)
             ->paginate($perPage);
 
         return Inertia::render('Admin/Classes/Courses/Categories/Index', [

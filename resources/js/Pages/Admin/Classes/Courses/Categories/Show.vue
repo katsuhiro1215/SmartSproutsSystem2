@@ -71,8 +71,8 @@ const setActiveTab = (tab) => {
     <ClassLayout>
       <div class="flex justify-between p-5">
         <div class="flex flex-col gap-2">
-          <PageSubTitle title="店舗詳細" />
-          <PageDescription description="店舗の詳細を表示する画面です。" />
+          <PageSubTitle title="コースカテゴリー詳細" />
+          <PageDescription description="コースカテゴリーの詳細を表示する画面です。" />
         </div>
         <div class="flex justify-end items-center gap-2">
           <BackButton :href="route('admin.courseCategory.index')"
@@ -86,8 +86,8 @@ const setActiveTab = (tab) => {
             <div class="flex flex-col items-center space-y-6">
               <Avatar
                 :src="
-                  courseCategory.course_photo_path
-                    ? `/storage/course_categories/${courseCategory.course_photo_path}`
+                  courseCategory.course_category_photo_path
+                    ? `/storage/course_categories/${courseCategory.course_category_photo_path}`
                     : '/upload/sports.png'
                 "
                 size="xl"

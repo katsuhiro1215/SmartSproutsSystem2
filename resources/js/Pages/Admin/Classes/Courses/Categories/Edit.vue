@@ -135,7 +135,7 @@ const update = () => {
           :items="[
             { name: 'Home', url: route('admin.dashboard') },
             { name: 'Course Category', url: route('admin.courseCategory.index') },
-            { name: 'Create', url: route('admin.courseCategory.edit', courseCategory.id) },
+            { name: 'Edit', url: route('admin.courseCategory.edit', courseCategory.id) },
           ]"
         />
       </div>

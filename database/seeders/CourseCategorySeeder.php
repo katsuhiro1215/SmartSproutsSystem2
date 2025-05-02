@@ -21,7 +21,7 @@ class CourseCategorySeeder extends Seeder
                 'description' => '一般会員向け体操教室の説明',
                 'course_category_photo_path' => null,
                 'status' => true,
-                'start_date' => null,
+                'start_date' => '2023-05-01',
                 'end_date' => null,
             ],
             [
@@ -31,7 +31,7 @@ class CourseCategorySeeder extends Seeder
                 'description' => '非会員向け無料体操教室の説明',
                 'course_category_photo_path' => null,
                 'status' => true,
-                'start_date' => null,
+                'start_date' => '2023-05-01',
                 'end_date' => null,
             ],
             [
@@ -41,7 +41,7 @@ class CourseCategorySeeder extends Seeder
                 'description' => '非会員向け有料体操教室の説明',
                 'course_category_photo_path' => null,
                 'status' => true,
-                'start_date' => null,
+                'start_date' => '2023-05-01',
                 'end_date' => null,
             ],
             [
@@ -81,7 +81,7 @@ class CourseCategorySeeder extends Seeder
                 'description' => '一般会員向けヨガ教室の説明',
                 'course_category_photo_path' => null,
                 'status' => true,
-                'start_date' => null,
+                'start_date' => '2023-05-01',
                 'end_date' => null,
             ],
             [
@@ -91,7 +91,7 @@ class CourseCategorySeeder extends Seeder
                 'description' => '非会員向け無料ヨガ教室の説明',
                 'course_category_photo_path' => null,
                 'status' => true,
-                'start_date' => null,
+                'start_date' => '2023-05-01',
                 'end_date' => null,
             ],
             [
@@ -101,7 +101,7 @@ class CourseCategorySeeder extends Seeder
                 'description' => '非会員向け有料ヨガ教室の説明',
                 'course_category_photo_path' => null,
                 'status' => true,
-                'start_date' => null,
+                'start_date' => '2023-05-01',
                 'end_date' => null,
             ],
         ]);

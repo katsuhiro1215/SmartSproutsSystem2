@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('description', 1000)->comment('コースカテゴリーの説明');
             $table->string('course_category_photo_path')->nullable()->comment('コースカテゴリーの画像パス');
             $table->boolean('status')->default(true)->comment('コースカテゴリーの状態');
-            $table->date('start_date')->nullable()->comment('コースカテゴリーの開始日');
+            $table->date('start_date')->comment('コースカテゴリーの開始日');
             $table->date('end_date')->nullable()->comment('コースカテゴリーの終了日');
             $table->timestamps();
             $table->softDeletes();
