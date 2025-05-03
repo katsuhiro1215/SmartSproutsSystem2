@@ -199,12 +199,14 @@ const cancelDeletion = () => {
                           >
                             <Avatar
                               :src="
-                                item.admin_profile
+                                item.admin_profile &&
+                                item.admin_profile.admin_photo_path
                                   ? item.admin_profile.admin_photo_path
                                   : '/upload/user.png'
                               "
                               :alt="
-                                item.admin_profile
+                                item.admin_profile &&
+                                item.admin_profile.full_name
                                   ? item.admin_profile.full_name
                                   : ''
                               "

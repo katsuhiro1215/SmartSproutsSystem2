@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,8 @@ class AdminOrganizationFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'admin_id' => Admin::all()->random()->id,
+            'organization_id' => 2, // 2はデフォルトの組織ID
         ];
     }
 }

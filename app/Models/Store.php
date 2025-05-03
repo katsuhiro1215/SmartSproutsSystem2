@@ -47,6 +47,12 @@ class Store extends Model
         return $this->belongsTo(Organization::class);
     }
 
+    // 店舗に関連する生徒を取得 (多対多)
+    public function students()
+    {
+        return $this->belongsToMany(Student::class, 'store_student', 'store_id', 'student_id');
+    }
+
     // Scopes
     // 全店舗を取得するスコープ
     public function scopeAllStores(Builder $query)

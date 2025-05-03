@@ -3,7 +3,7 @@ import NavLink from '@/Components/NavLink.vue';
 
 const defaultMenuItems = [
   { name: 'home', route: 'admin.dashboard', label: 'ホーム', icon: '/upload/house.png' },
-  { name: 'user', route: 'admin.dashboard', label: '顧客', icon: '/upload/family.png' },
+  { name: 'user', route: 'admin.user.index', label: '顧客', icon: '/upload/family.png' },
   { name: 'admin', route: 'admin.employee.index', label: '従業員', icon: '/upload/employees.png' },
   { name: 'store', route: 'admin.store.index', label: '店舗', icon: '/upload/store.png' },
   { name: 'class', route: 'admin.class.index', label: 'クラス', icon: '/upload/sports.png' },

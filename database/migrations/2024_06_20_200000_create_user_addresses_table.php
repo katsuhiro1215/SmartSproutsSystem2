@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admin_addresses', function (Blueprint $table) {
+        Schema::create('user_addresses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('admin_id')->constrained();
+            $table->foreignId('user_id')->constrained('users')->comment('ユーザーID');
             $table->string('postalcode', 7)->comment('郵便番号');
             $table->string('prefecture', 10)->comment('都道府県名');
             $table->string('city', 30)->comment('市区町村名');
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admin_addresses');
+        Schema::dropIfExists('user_addresses');
     }
 };

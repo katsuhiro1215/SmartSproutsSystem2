@@ -22,6 +22,9 @@ class LessonSeeder extends Seeder
                 'status' => 1,
                 'start_date' => '2023-05-01',
                 'end_date' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
             ],
             [
                 'store_id' => 2,
@@ -31,6 +34,9 @@ class LessonSeeder extends Seeder
                 'status' => 1,
                 'start_date' => '2024-09-01',
                 'end_date' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
             ],
             [
                 'store_id' => 2,
@@ -38,8 +44,11 @@ class LessonSeeder extends Seeder
                 'description' => '会員制のピラティス教室です。',
                 'lesson_photo_path' => null,
                 'status' => 1,
-                'start_date' => '2024-10-01',
+                'start_date' => '2024-09-01',
                 'end_date' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
             ],
             [
                 'store_id' => 3,
@@ -49,6 +58,9 @@ class LessonSeeder extends Seeder
                 'status' => 1,
                 'start_date' => '2024-11-01',
                 'end_date' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
             ],
             [
                 'store_id' => 3,
@@ -58,6 +70,9 @@ class LessonSeeder extends Seeder
                 'status' => 1,
                 'start_date' => '2024-11-01',
                 'end_date' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
             ],
             [
                 'store_id' => 4,
@@ -67,6 +82,9 @@ class LessonSeeder extends Seeder
                 'status' => 1,
                 'start_date' => '2024-11-01',
                 'end_date' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
             ],
             [
                 'store_id' => 4,
@@ -76,6 +94,9 @@ class LessonSeeder extends Seeder
                 'status' => 1,
                 'start_date' => '2024-11-01',
                 'end_date' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
             ],
             [
                 'store_id' => 4,
@@ -85,6 +106,9 @@ class LessonSeeder extends Seeder
                 'status' => 1,
                 'start_date' => '2024-11-01',
                 'end_date' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
             ],
             [
                 'store_id' => 4,
@@ -94,6 +118,9 @@ class LessonSeeder extends Seeder
                 'status' => 1,
                 'start_date' => '2024-11-01',
                 'end_date' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
             ],
             [
                 'store_id' => 4,
@@ -101,9 +128,24 @@ class LessonSeeder extends Seeder
                 'description' => '会員制のボーカル教室です。',
                 'lesson_photo_path' => null,
                 'status' => 1,
-                'start_date' => null,
+                'start_date' => '2024-11-01',
                 'end_date' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
             ],
+            [
+                'store_id' => 5,
+                'name' => '水泳教室',
+                'description' => '会員制の水泳教室です。',
+                'lesson_photo_path' => null,
+                'status' => 1,
+                'start_date' => '2024-11-01',
+                'end_date' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
+            ]
         ]);
     }
 }
