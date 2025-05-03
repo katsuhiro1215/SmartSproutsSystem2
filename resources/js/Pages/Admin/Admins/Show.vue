@@ -46,7 +46,7 @@ const props = defineProps({
     <!-- Header -->
     <template #header>
       <div class="flex sm:flex-row items-center justify-between">
-        <PageTitle title="オーナー管理" />
+        <PageTitle title="管理者管理" />
         <Breadcrumb
           :items="[
             { name: 'Home', url: route('admin.dashboard') },

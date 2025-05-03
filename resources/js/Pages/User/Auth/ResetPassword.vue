@@ -4,9 +4,9 @@ import { Head, useForm } from "@inertiajs/vue3";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 // Components - Forms
 import FormGroup from "@/Components/Forms/FormGroup.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
-import InputError from "@/Components/InputError.vue";
+import InputLabel from "@/Components/Forms/InputLabel.vue";
+import TextInput from "@/Components/Forms/TextInput.vue";
+import InputError from "@/Components/Forms/InputError.vue";
 // Components - Buttons
 import PrimaryButton from "@/Components/Buttons/PrimaryButton.vue";
 

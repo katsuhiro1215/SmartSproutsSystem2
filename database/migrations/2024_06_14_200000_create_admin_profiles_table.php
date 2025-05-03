@@ -20,8 +20,9 @@ return new class extends Migration
             $table->string('firstname_kana', 50)->comment('メイ');
             $table->string('admin_photo_path')->nullable()->comment('管理者画像パス');
             $table->string('birth')->comment('生年月日');
-            $table->string('gender', 10)->comment('性別');
-            $table->string('mobile_number', 20)->comment('携帯番号');
+            $table->enum('gender', ['男性', '女性', 'その他'])->comment('性別');
+            $table->enum('blood', ['A型', 'B型', 'O型', 'AB型', '不明', '未回答'])->comment('血液型');
+            $table->string('mobile_number', 15)->comment('携帯番号');
             $table->string('admin_no', 20)->comment('管理者番号');
             $table->string('serial_no', 20)->nullable()->comment('シリアル番号');
             $table->string('website')->nullable()->comment('Webサイト URL');

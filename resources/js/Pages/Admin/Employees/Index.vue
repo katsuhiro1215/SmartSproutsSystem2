@@ -177,11 +177,17 @@ const restoreEmployee = (id) => {
                           >
                             <Avatar
                               :src="
+                                item.admin_profile &&
                                 item.admin_profile.admin_photo_path
                                   ? item.admin_profile.admin_photo_path
                                   : '/upload/user.png'
                               "
-                              :alt="item.admin_profile.full_name"
+                              :alt="
+                                item.admin_profile &&
+                                item.admin_profile.full_name
+                                  ? item.admin_profile.full_name
+                                  : ''
+                              "
                               size="lg"
                               class="rounded-full"
                             />
@@ -195,13 +201,26 @@ const restoreEmployee = (id) => {
                           <td
                             class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
-                            {{ item.admin_profile.lastname }}
-                            {{ item.admin_profile.firstname }}
+                            {{
+                              item.admin_profile && item.admin_profile.lastname
+                                ? item.admin_profile.lastname
+                                : ""
+                            }}
+                            {{
+                              item.admin_profile && item.admin_profile.firstname
+                                ? item.admin_profile.firstname
+                                : ""
+                            }}
                           </td>
                           <td
                             class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
-                            {{ item.admin_profile.mobile_number }}
+                            {{
+                              item.admin_profile &&
+                              item.admin_profile.mobile_number
+                                ? item.admin_profile.mobile_number
+                                : ""
+                            }}
                           </td>
                           <td
                             class="flex gap-3 p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -232,11 +251,17 @@ const restoreEmployee = (id) => {
                             <div class="flex justify-center">
                               <Avatar
                                 :src="
+                                  item.admin_profile &&
                                   item.admin_profile.admin_photo_path
                                     ? item.admin_profile.admin_photo_path
                                     : '/upload/user.png'
                                 "
-                                :alt="item.admin_profile.full_name"
+                                :alt="
+                                  item.admin_profile &&
+                                  item.admin_profile.full_name
+                                    ? item.admin_profile.full_name
+                                    : ''
+                                "
                                 size="lg"
                                 class="rounded-full"
                               />
@@ -254,13 +279,13 @@ const restoreEmployee = (id) => {
                             <h4
                               class="text-sm text-gray-500 dark:text-gray-400 text-center"
                             >
-                              {{ item.admin_profile.lastname }}
-                              {{ item.admin_profile.firstname }}
+                              {{ item.admin_profile && item.admin_profile.lastname ? item.admin_profile.lastname : '' }}
+                              {{ item.admin_profile && item.admin_profile.firstname ? item.admin_profile.firstname : '' }}
                             </h4>
                             <p
                               class="text-sm text-gray-500 dark:text-gray-400 text-center"
                             >
-                              {{ item.admin_profile.mobile_number }}
+                              {{ item.admin_profile && item.admin_profile.mobile_number ? item.admin_profile.mobile_number : '' }}
                             </p>
                             <div class="flex justify-center gap-3 mt-4">
                               <PrimaryButton

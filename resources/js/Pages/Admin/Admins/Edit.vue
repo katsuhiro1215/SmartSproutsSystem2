@@ -31,8 +31,6 @@ import EyeOutline from "vue-material-design-icons/EyeOutline.vue";
 import Back from "vue-material-design-icons/ArrowLeft.vue";
 import Save from "vue-material-design-icons/ContentSave.vue";
 import Clear from "vue-material-design-icons/CloseCircleOutline.vue";
-// API
-import YubinBango from "yubinbango-core2";
 // Validation
 import {
   validateOrganizationId,
