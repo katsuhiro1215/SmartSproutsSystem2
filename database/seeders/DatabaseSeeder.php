@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminSeeder::class);
         $this->call(AdminProfileSeeder::class);
         $this->call(AdminAddressSeeder::class);
+        $this->call(MembershipOptionSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(UserAddressSeeder::class);
         $this->call(StudentSeeder::class);

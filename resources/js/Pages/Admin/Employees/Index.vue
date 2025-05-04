@@ -81,6 +81,13 @@ const restoreEmployee = (id) => {
     </template>
     <!-- Flash Message -->
     <FlashMessage />
+    <!-- Alert -->
+    <Alert
+      :isVisible="showAlert"
+      :message="`従業員を削除しますか？`"
+      @confirm="confirmDeletion"
+      @cancel="cancelDeletion"
+    />
     <!-- Main Contents -->
     <EmployeeLayout>
       <div class="flex justify-between">
@@ -279,13 +286,28 @@ const restoreEmployee = (id) => {
                             <h4
                               class="text-sm text-gray-500 dark:text-gray-400 text-center"
                             >
-                              {{ item.admin_profile && item.admin_profile.lastname ? item.admin_profile.lastname : '' }}
-                              {{ item.admin_profile && item.admin_profile.firstname ? item.admin_profile.firstname : '' }}
+                              {{
+                                item.admin_profile &&
+                                item.admin_profile.lastname
+                                  ? item.admin_profile.lastname
+                                  : ""
+                              }}
+                              {{
+                                item.admin_profile &&
+                                item.admin_profile.firstname
+                                  ? item.admin_profile.firstname
+                                  : ""
+                              }}
                             </h4>
                             <p
                               class="text-sm text-gray-500 dark:text-gray-400 text-center"
                             >
-                              {{ item.admin_profile && item.admin_profile.mobile_number ? item.admin_profile.mobile_number : '' }}
+                              {{
+                                item.admin_profile &&
+                                item.admin_profile.mobile_number
+                                  ? item.admin_profile.mobile_number
+                                  : ""
+                              }}
                             </p>
                             <div class="flex justify-center gap-3 mt-4">
                               <PrimaryButton

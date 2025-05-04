@@ -4,18 +4,16 @@ import { onMounted, ref, computed } from "vue";
 // Layouts
 import AdminAuthenticatedLayout from "@/Layouts/AdminAuthenticatedLayout.vue";
 // Components
-import UserLayout from "@/Components/SidebarLayouts/UserLayout.vue";
+import SettingLayout from "@/Components/SidebarLayouts/SettingLayout.vue";
 import PageTitle from "@/Components/PageTitle.vue";
 import PageSubTitle from "@/Components/PageSubTitle.vue";
 import PageDescription from "@/Components/PageDescription.vue";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import Card from "@/Components/Cards/Card.vue";
-import Avatar from "@/Components/Avatar.vue";
 import Alert from "@/Components/Alerts/Alert.vue";
 import FlashMessage from "@/Components/FlashMessage.vue";
 import ListView from "@/Components/ListView.vue";
 import GridView from "@/Components/GridView.vue";
-import Badge from "@/Components/Badge.vue";
 // Components - Buttons
 import PrimaryButton from "@/Components/Buttons/PrimaryButton.vue";
 import DangerButton from "@/Components/Buttons/DangerButton.vue";
@@ -31,38 +29,34 @@ import DotsGrid from "vue-material-design-icons/DotsGrid.vue";
 import EyeOutline from "vue-material-design-icons/EyeOutline.vue";
 
 const props = defineProps({
-  allStudents: Object,
-  students: Object,
-  deletedStudents: Object,
+  membershipOptions: Array,
 });
 
 // Lifecycle
 onMounted(() => {
-  console.log("students:", props);
+  console.log("membershipOptions:", props);
 });
 
 const form = useForm({});
 
 // Tabs
 const tabs = [
-  { name: "allStudents", label: "全生徒一覧" },
-  { name: "students", label: "生徒一覧" },
-  { name: "deletedStudents", label: "削除済生徒一覧" },
+  { name: "membershipOptions", label: "メンバーシップオプション一覧" },
 ];
-const activeTab = ref("students");
+const activeTab = ref("membershipOptions");
 const viewMode = ref("list");
 const switchTab = (tabName) => {
   activeTab.value = tabName;
 };
 
-// Students
-const currentStudents = computed(() => {
+// Users
+const currentMembershipOptions = computed(() => {
   return props[activeTab.value];
 });
 
 // 復活処理
-const restoreStudent = (id) => {
-  form.put(route("admin.student.restore", id));
+const restoreMembershipOption = (id) => {
+  form.put(route("admin.membershipOption.restore", id));
 };
 
 // 削除処理 (削除、完全削除) --- アラート表示
@@ -76,9 +70,9 @@ const requestDeletion = (entity, type) => {
 };
 const confirmDeletion = () => {
   if (entityType.value === "delete") {
-    form.delete(route("admin.student.destroy", currentEntity.value.id));
+    form.delete(route("admin.membershipOption.destroy", currentEntity.value.id));
   } else if (entityType.value === "forceDelete") {
-    form.delete(route("admin.student.forceDelete", currentEntity.value.id));
+    form.delete(route("admin.membershipOption.forceDelete", currentEntity.value.id));
   }
   showAlert.value = false;
 };
@@ -88,17 +82,17 @@ const cancelDeletion = () => {
 </script>
 
 <template>
-  <Head title="生徒管理" />
+  <Head title="メンバーシップオプション管理" />
 
   <AdminAuthenticatedLayout>
     <!-- Header -->
     <template #header>
       <div class="flex sm:flex-row items-center justify-between">
-        <PageTitle title="生徒管理" />
+        <PageTitle title="メンバーシップオプション管理" />
         <Breadcrumb
           :items="[
             { name: 'Home', url: route('admin.dashboard') },
-            { name: 'Student', url: route('admin.student.index') },
+            { name: 'Membership Option', url: route('admin.membershipOption.index') },
           ]"
         />
       </div>
@@ -108,22 +102,20 @@ const cancelDeletion = () => {
     <!-- Alert -->
     <Alert
       :isVisible="showAlert"
-      :message="`生徒を削除しますか？`"
+      :message="`メンバーシップオプションを削除しますか？`"
       @confirm="confirmDeletion"
       @cancel="cancelDeletion"
     />
     <!-- Main Contents -->
-    <UserLayout>
+    <SettingLayout>
       <div class="flex justify-between p-5">
         <div class="flex flex-col gap-2">
-          <PageSubTitle title="生徒一覧" />
-          <PageDescription description="生徒一覧を表示する画面です。" />
+          <PageSubTitle title="メンバーシップオプション一覧" />
+          <PageDescription description="メンバーシップオプション一覧を表示する画面です。" />
         </div>
         <div class="flex justify-end items-center gap-2">
-          <PrimaryButton
-            :href="route('admin.student.create')"
-            buttonType="indigo"
-            ><Plus />生徒新規作成</PrimaryButton
+          <PrimaryButton :href="route('admin.membershipOption.create')" buttonType="indigo"
+            ><Plus />メンバーシップオプション新規作成</PrimaryButton
           >
           <BackButton :href="route('admin.dashboard')"
             ><Back />ホームへ戻る</BackButton
@@ -182,8 +174,12 @@ const cancelDeletion = () => {
                     <!-- リスト表示 -->
                     <div v-if="viewMode === 'list'">
                       <ListView
-                        :items="currentStudents"
-                        :headers="['SL', '基本情報', '会員種別', 'Action']"
+                        :items="currentMembershipOptions"
+                        :headers="[
+                          'SL',
+                          '基本情報',
+                          'Action',
+                        ]"
                       >
                         <template #renderItem="{ item, index }">
                           <td
@@ -194,62 +190,30 @@ const cancelDeletion = () => {
                           <td
                             class="flex items-center gap-3 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white p-4"
                           >
-                            <Avatar
-                              :src="'/upload/user.png'"
-                              :alt="item.full_name"
-                              size="lg"
-                              class="rounded-full"
-                            />
-                            <div class="flex flex-col gap-1">
-                              <span>
-                                {{ item.full_name }}
-                              </span>
-                            </div>
-                          </td>
-                          <td
-                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                          >
-                            <Badge
-                              v-if="item.membershipOption.name == '会員'"
-                              type="success"
-                            >
-                              会員
-                            </Badge>
-                            <Badge
-                              v-if="item.membershipOption.name == '非会員'"
-                              type="danger"
-                            >
-                              非会員
-                            </Badge>
-                            <Badge
-                              v-if="item.membershipOption.name == '仮会員'"
-                              type="info"
-                            >
-                              仮会員
-                            </Badge>
+                          {{ item.name }}
                           </td>
                           <td
                             class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
                             <div class="flex gap-3">
                               <PrimaryButton
-                                v-if="activeTab === 'students'"
-                                :href="route('admin.student.show', item.id)"
+                                v-if="activeTab === 'membershipOptions'"
+                                :href="route('admin.membershipOption.show', item.id)"
                                 buttonType="info"
                                 class="size-10"
                               >
                                 <EyeOutline />
                               </PrimaryButton>
                               <PrimaryButton
-                                v-if="activeTab === 'students'"
-                                :href="route('admin.student.edit', item.id)"
+                                v-if="activeTab === 'membershipOptions'"
+                                :href="route('admin.membershipOption.edit', item.id)"
                                 buttonType="warning"
                                 class="size-10"
                               >
                                 <NoteEdit />
                               </PrimaryButton>
                               <DangerButton
-                                v-if="activeTab === 'students'"
+                                v-if="activeTab === 'membershipOptions'"
                                 @click="requestDeletion(item, 'delete')"
                                 buttonType="danger"
                                 class="size-10"
@@ -257,15 +221,15 @@ const cancelDeletion = () => {
                                 <TrashCanOutline />
                               </DangerButton>
                               <PrimaryButton
-                                v-if="activeTab === 'deletedStudents'"
-                                @click="restoreStudent(item.id)"
+                                v-if="activeTab === 'deletedMembershipOptions'"
+                                @click="restoreMembershipOption(item.id)"
                                 buttonType="success"
                               >
                                 <Restore class="mr-2" />
                                 <span>復活</span>
                               </PrimaryButton>
                               <DangerButton
-                                v-if="activeTab === 'deletedStudents'"
+                                v-if="activeTab === 'deletedMembershipOptions'"
                                 @click="requestDeletion(item, 'forceDelete')"
                                 buttonType="danger"
                               >
@@ -279,61 +243,33 @@ const cancelDeletion = () => {
                     </div>
                     <!-- グリッド表示 -->
                     <div v-else>
-                      <GridView :items="currentStudents.data">
+                      <GridView :items="currentMembershipOptions.data">
                         <template #renderItem="{ item }">
                           <div class="space-y-2">
-                            <div class="flex justify-center">
-                              <Avatar
-                                :src="'/upload/children.png'"
-                                :alt="item.full_name"
-                                size="lg"
-                                class="rounded-full"
-                              />
-                            </div>
                             <h3
                               class="text-base font-medium text-gray-900 dark:text-white text-center"
                             >
-                              {{ item.full_name }}
+                              {{ item.name }}
                             </h3>
-                            <div class="flex justify-center">
-                              <Badge
-                                v-if="item.membershipOption.name == '会員'"
-                                type="success"
-                              >
-                                会員
-                              </Badge>
-                              <Badge
-                                v-if="item.membershipOption.name == '非会員'"
-                                type="danger"
-                              >
-                                非会員
-                              </Badge>
-                              <Badge
-                                v-if="item.membershipOption.name == '仮会員'"
-                                type="info"
-                              >
-                                仮会員
-                              </Badge>
-                            </div>
                             <div class="flex justify-center gap-3 mt-4">
                               <PrimaryButton
-                                v-if="activeTab === 'students'"
-                                :href="route('admin.student.show', item.id)"
+                                v-if="activeTab === 'membershipOptions'"
+                                :href="route('admin.membershipOption.show', item.id)"
                                 buttonType="info"
                                 class="size-10"
                               >
                                 <EyeOutline />
                               </PrimaryButton>
                               <PrimaryButton
-                                v-if="activeTab === 'students'"
-                                :href="route('admin.student.edit', item.id)"
+                                v-if="activeTab === 'membershipOptions'"
+                                :href="route('admin.membershipOption.edit', item.id)"
                                 buttonType="warning"
                                 class="size-10"
                               >
                                 <NoteEdit />
                               </PrimaryButton>
                               <DangerButton
-                                v-if="activeTab === 'students'"
+                                v-if="activeTab === 'membershipOptions'"
                                 @click="requestDeletion(item, 'delete')"
                                 buttonType="danger"
                                 class="size-10"
@@ -341,15 +277,15 @@ const cancelDeletion = () => {
                                 <TrashCanOutline />
                               </DangerButton>
                               <PrimaryButton
-                                v-if="activeTab === 'deletedStudents'"
-                                @click="restoreUser(item.id)"
+                                v-if="activeTab === 'deletedMembershipOptions'"
+                                @click="restoreMembershipOption(item.id)"
                                 buttonType="success"
                               >
                                 <Restore class="mr-2" />
                                 <span>復活</span>
                               </PrimaryButton>
                               <DangerButton
-                                v-if="activeTab === 'deletedStudents'"
+                                v-if="activeTab === 'deletedMembershipOptions'"
                                 @click="requestDeletion(item, 'forceDelete')"
                                 buttonType="danger"
                               >
@@ -368,6 +304,6 @@ const cancelDeletion = () => {
           </template>
         </Card>
       </div>
-    </UserLayout>
+    </SettingLayout>
   </AdminAuthenticatedLayout>
 </template>

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('membership_option_id')->constrained('membership_options')->comment('オプションID');
             $table->string('lastname', 40)->comment('姓');
             $table->string('firstname', 40)->comment('名');
             $table->string('lastname_kana', 50)->comment('セイ');
@@ -25,7 +26,6 @@ return new class extends Migration
             $table->string('mobile_number_relationship', 20)->comment('緊急連絡先の続柄');
             $table->text('personal_history')->comment('既往歴');
             $table->string('member_no')->nullable()->comment('会員ID');
-            $table->string('membership_status', 20)->default('非会員')->comment('会員, 非会員');
             $table->string('serial_no')->nullable()->comment('シリアルナンバー');
             $table->boolean('permission_photo')->default(false)->comment('写真使用許可');
             $table->boolean('permission_dm')->default(false)->comment('DM発送許可');

@@ -21,6 +21,12 @@ const menuItems = [
     route: "admin.admin.index",
   },
   {
+    name: "membershipOption.index",
+    label: "メンバー",
+    icon: "/upload/family.png",
+    route: "admin.membershipOption.index",
+  },
+  {
     name: "settings.index",
     label: "オーナー",
     icon: "/upload/family.png",

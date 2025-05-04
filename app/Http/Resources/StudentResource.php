@@ -16,6 +16,10 @@ class StudentResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'membershipOption' => [
+                'id' => $this->membershipOption->id,
+                'name' => $this->membershipOption->name,
+            ],
             'full_name' => "{$this->lastname} {$this->firstname}",
             'full_name_kana' => "{$this->lastname_kana} {$this->firstname_kana}",
             'student_photo_path' => $this->student_photo_path,
@@ -27,7 +31,6 @@ class StudentResource extends JsonResource
             'mobile_number_relationship' => $this->mobile_number_relationship,
             'personal_history' => $this->personal_history,
             'member_no' => $this->member_no,
-            'membership_status' => $this->membership_status,
             'serial_no' => $this->serial_no,
             'permission_photo' => $this->permission_photo,
             'permission_dm' => $this->permission_dm,

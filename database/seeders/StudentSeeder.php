@@ -15,6 +15,7 @@ class StudentSeeder extends Seeder
     {
         DB::table('students')->insert([
             [
+                'membership_option_id' => 1,
                 'lastname' => '栫',
                 'firstname' => 'ひなた',
                 'lastname_kana' => 'カコイ',
@@ -27,7 +28,6 @@ class StudentSeeder extends Seeder
                 'mobile_number_relationship' => '母',
                 'personal_history' => '特になし',
                 'member_no' => '123456',
-                'membership_status' => '会員',
                 'serial_no' => 'ABC123456',
                 'permission_photo' => true,
                 'permission_dm' => true,

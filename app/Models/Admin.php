@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Notifications\AdminResetPassword as ResetPasswordNotification;
 
@@ -75,25 +76,25 @@ class Admin extends Authenticatable
 
     // Scopes
     // Owner
-    public function scopeOwners($query)
+    public function scopeOwners(Builder $query)
     {
         return $query->whereIn('role', ['Owner']);
     }
 
     // Admin (管理者)
-    public function scopeAdmins($query)
+    public function scopeAdmins(Builder $query)
     {
         return $query->whereIn('role', ['SuperAdmin', 'Admin', 'SubAdmin']);
     }
 
     // Employee (従業員)
-    public function scopeEmployees($query)
+    public function scopeEmployees(Builder $query)
     {
         return $query->whereIn('role', ['Manager', 'Employee', 'Contract', 'PartTime']);
     }
 
     // その他 (外部講師など)
-    public function scopeOthers($query)
+    public function scopeOthers(Builder $query)
     {
         return $query->whereNotIn('role', ['Owner', 'SuperAdmin', 'Admin', 'SubAdmin', 'Manager', 'Employee', 'Contract', 'PartTime']);
     }
