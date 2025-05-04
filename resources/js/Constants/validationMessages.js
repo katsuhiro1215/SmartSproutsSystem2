@@ -26,6 +26,11 @@ export default {
             "携帯電話番号は10桁または11桁の数字で入力してください。",
         fax_number: "FAX番号は数字で入力してください。",
         fax_number_length: "FAX番号は10桁または11桁の数字で入力してください。",
+        company_name: "会社名は50文字以内で入力してください。",
+        company_phone_number:
+            "会社電話番号は数字で入力してください。",
+        company_phone_number_length:
+            "会社電話番号は10桁または11桁の数字で入力してください。",
         established_date:
             "設立日は正しい日付形式（YYYY-MM-DD）で入力してください。",
         website_url: "ウェブサイトURLは正しい形式で入力してください。",

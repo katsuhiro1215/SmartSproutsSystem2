@@ -34,10 +34,6 @@ import {
   validateAllFields,
 } from "./_components/validation";
 
-const props = defineProps({
-
-});
-
 // Form
 const form = useForm({
   username: "",

@@ -17,6 +17,7 @@ class StudentFactory extends Factory
     public function definition(): array
     {
         return [
+            'membership_option_id' => fake()->numberBetween(1, 3),
             'lastname' => fake()->lastName(),
             'firstname' => fake()->firstName(),
             'lastname_kana' => fake()->lastName(),
@@ -29,7 +30,6 @@ class StudentFactory extends Factory
             'mobile_number_relationship' => fake()->randomElement(['父', '母', '兄', '姉']),
             'personal_history' => fake()->text(),
             'member_no' => fake()->numberBetween(10000, 99999),
-            'membership_status' => fake()->randomElement(['会員', '非会員']),
             'serial_no' => fake()->numberBetween(10000, 99999),
             'permission_photo' => fake()->boolean(),
             'permission_dm' => fake()->boolean(),

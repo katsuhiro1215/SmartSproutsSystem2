@@ -8,6 +8,18 @@ const menuItems = [
     icon: "/upload/user.png",
     route: "admin.user.index",
   },
+  {
+    name: "studnet.index",
+    label: "生徒",
+    icon: "/upload/children.png",
+    route: "admin.student.index",
+  },
+  {
+    name: "guardian.index",
+    label: "保護者",
+    icon: "/upload/parents.png",
+    route: "admin.guardian.index",
+  },
 ];
 </script>
 

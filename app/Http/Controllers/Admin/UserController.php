@@ -23,6 +23,7 @@ class UserController extends Controller
     {
         $this->middleware('auth:admins');
     }
+
     /**
      * ユーザー一覧画面
      * 

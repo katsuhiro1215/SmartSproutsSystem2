@@ -205,7 +205,7 @@ const store = () => {
     <LoadingIndicator :isLoading="isLoading" :loadingText="loadingText" />
     <!-- Main Contents -->
     <StoreLayout>
-      <div class="flex justify-between">
+      <div class="flex justify-between p-5">
         <div class="w-1/2 flex flex-col gap-2">
           <PageSubTitle title="店舗新規登録画面" />
           <PageDescription
@@ -317,7 +317,7 @@ const store = () => {
                       </FormGroup>
                     </div>
                     <div class="flex flex-col lg:flex-row gap-4">
-                      <FormGroup class="w-1/2">
+                      <FormGroup class="wfull">
                         <InputLabel
                           for="description"
                           value="店舗概要"
