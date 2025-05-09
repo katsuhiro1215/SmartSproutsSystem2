@@ -4,9 +4,19 @@ export default {
     common: {
         required: "この項目は入力必須です。",
         start_date: "開始日は正しい日付形式（YYYY-MM-DD）で入力してください。",
+        start_date_before_end_date:
+            "開始日は終了日より前の日付を選択してください。",
         end_date: "終了日は正しい日付形式（YYYY-MM-DD）で入力してください。",
         end_date_after_start_date:
             "終了日は開始日より後の日付を選択してください。",
+        start_time: "開始時間は正しい時間形式（HH:MM）で入力してください。",
+        start_time_before_end_time:
+            "開始時間は終了時間より前の時間を選択してください。",
+        end_time: "終了時間は正しい時間形式（HH:MM）で入力してください。",
+        end_time_after_start_time:
+            "終了時間は開始時間より後の時間を選択してください。",
+        business_date: "営業日は正しい日付形式（YYYY-MM-DD）で入力してください。",
+        day_of_week: "曜日は月曜日から日曜日のいずれかを選択してください。",
         email: "メールアドレスの形式で入力してください。",
         emailUnique: "このメールアドレスは既に使用されています。",
         lastname: "姓は40文字以内で入力してください。",

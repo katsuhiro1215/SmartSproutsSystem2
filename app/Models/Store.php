@@ -53,6 +53,18 @@ class Store extends Model
         return $this->belongsToMany(Student::class, 'store_student', 'store_id', 'student_id');
     }
 
+    // 店舗に関連するレッスンを取得 (1対多)
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
+    }
+
+    // 店舗に関するスケジュールを取得 (1対多)
+    public function schedules()
+    {
+        return $this->hasMany(StoreSchedule::class);
+    }
+
     // Scopes
     // 全店舗を取得するスコープ
     public function scopeAllStores(Builder $query)

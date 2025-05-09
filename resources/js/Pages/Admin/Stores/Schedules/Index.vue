@@ -1,10 +1,10 @@
 <script setup>
 import { Head, useForm } from "@inertiajs/vue3";
-import { defineProps, onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed } from "vue";
 // Layouts
 import AdminAuthenticatedLayout from "@/Layouts/AdminAuthenticatedLayout.vue";
 // Components
-import SettingLayout from "@/Components/SidebarLayouts/SettingLayout.vue";
+import StoreLayout from "@/Components/SidebarLayouts/StoreLayout.vue";
 import PageTitle from "@/Components/PageTitle.vue";
 import PageSubTitle from "@/Components/PageSubTitle.vue";
 import PageDescription from "@/Components/PageDescription.vue";
@@ -14,6 +14,7 @@ import Alert from "@/Components/Alerts/Alert.vue";
 import FlashMessage from "@/Components/FlashMessage.vue";
 import ListView from "@/Components/ListView.vue";
 import GridView from "@/Components/GridView.vue";
+import Badge from "@/Components/Badge.vue";
 // Components - Buttons
 import PrimaryButton from "@/Components/Buttons/PrimaryButton.vue";
 import DangerButton from "@/Components/Buttons/DangerButton.vue";
@@ -29,38 +30,38 @@ import DotsGrid from "vue-material-design-icons/DotsGrid.vue";
 import EyeOutline from "vue-material-design-icons/EyeOutline.vue";
 
 const props = defineProps({
-  allMembershipOptions: Object,
-  membershipOptions: Object,
-  deletedMembershipOptions: Object,
+  allStoreSchedules: Object,
+  storeSchedules: Object,
+  deletedStoreSchedules: Object,
 });
 
 // Lifecycle
 onMounted(() => {
-  console.log("membershipOptions:", props);
+  console.log("storeSchedules:", props);
 });
 
 const form = useForm({});
 
 // Tabs
 const tabs = [
-  { name: "allMembershipOptions", label: "全メンバーシップ一覧" },
-  { name: "membershipOptions", label: "メンバーシップ一覧" },
-  { name: "deletedMembershipOptions", label: "削除済みメンバーシップ一覧" },
+  { name: "allStoreSchedules", label: "全店舗スケジュール一覧" },
+  { name: "storeSchedules", label: "店舗スケジュール一覧" },
+  { name: "deletedStoreSchedules", label: "削除済店舗スケジュール一覧" },
 ];
-const activeTab = ref("membershipOptions");
+const activeTab = ref("storeSchedules");
 const viewMode = ref("list");
 const switchTab = (tabName) => {
   activeTab.value = tabName;
 };
 
-// Users
-const currentMembershipOptions = computed(() => {
+// Store Schedules
+const currentStoreSchedules = computed(() => {
   return props[activeTab.value];
 });
 
 // 復活処理
-const restoreMembershipOption = (id) => {
-  form.put(route("admin.membershipOption.restore", id));
+const restoreStoreSchedule = (id) => {
+  form.put(route("admin.storeSchedule.restore", id));
 };
 
 // 削除処理 (削除、完全削除) --- アラート表示
@@ -74,9 +75,11 @@ const requestDeletion = (entity, type) => {
 };
 const confirmDeletion = () => {
   if (entityType.value === "delete") {
-    form.delete(route("admin.membershipOption.destroy", currentEntity.value.id));
+    form.delete(route("admin.storeSchedule.destroy", currentEntity.value.id));
   } else if (entityType.value === "forceDelete") {
-    form.delete(route("admin.membershipOption.forceDelete", currentEntity.value.id));
+    form.delete(
+      route("admin.storeSchedule.forceDelete", currentEntity.value.id)
+    );
   }
   showAlert.value = false;
 };
@@ -86,17 +89,17 @@ const cancelDeletion = () => {
 </script>
 
 <template>
-  <Head title="メンバーシップオプション管理" />
+  <Head title="店舗スケジュール管理" />
 
   <AdminAuthenticatedLayout>
     <!-- Header -->
     <template #header>
       <div class="flex sm:flex-row items-center justify-between">
-        <PageTitle title="メンバーシップオプション管理" />
+        <PageTitle title="店舗スケジュール管理" />
         <Breadcrumb
           :items="[
             { name: 'Home', url: route('admin.dashboard') },
-            { name: 'Membership Option', url: route('admin.membershipOption.index') },
+            { name: 'Store Schedule', url: route('admin.storeSchedule.index') },
           ]"
         />
       </div>
@@ -106,20 +109,29 @@ const cancelDeletion = () => {
     <!-- Alert -->
     <Alert
       :isVisible="showAlert"
-      :message="`メンバーシップオプションを削除しますか？`"
+      :message="`店舗スケジュールを削除しますか？`"
       @confirm="confirmDeletion"
       @cancel="cancelDeletion"
     />
     <!-- Main Contents -->
-    <SettingLayout>
+    <StoreLayout>
       <div class="flex justify-between p-5">
         <div class="flex flex-col gap-2">
-          <PageSubTitle title="メンバーシップオプション一覧" />
-          <PageDescription description="メンバーシップオプション一覧を表示する画面です。" />
+          <PageSubTitle title="店舗スケジュール一覧" />
+          <PageDescription
+            description="店舗スケジュール一覧を表示する画面です。"
+          />
         </div>
-        <div class="flex justify-end items-center gap-2">
-          <PrimaryButton :href="route('admin.membershipOption.create')" buttonType="indigo"
-            ><Plus />メンバーシップオプション新規作成</PrimaryButton
+        <div class="flex flex-wrap justify-end items-center gap-2">
+          <PrimaryButton
+            :href="route('admin.storeSchedule.bulkDelete')"
+            buttonType="danger"
+            ><TrashCanOutline class="mr-2" />店舗スケジュール一括削除</PrimaryButton
+          >
+          <PrimaryButton
+            :href="route('admin.storeSchedule.create')"
+            buttonType="indigo"
+            ><Plus class="mr-2" />店舗スケジュール新規作成</PrimaryButton
           >
           <BackButton :href="route('admin.dashboard')"
             ><Back />ホームへ戻る</BackButton
@@ -178,10 +190,13 @@ const cancelDeletion = () => {
                     <!-- リスト表示 -->
                     <div v-if="viewMode === 'list'">
                       <ListView
-                        :items="currentMembershipOptions"
+                        :items="currentStoreSchedules"
                         :headers="[
                           'SL',
-                          '基本情報',
+                          '営業日',
+                          '曜日',
+                          '営業時間',
+                          'status',
                           'Action',
                         ]"
                       >
@@ -192,35 +207,56 @@ const cancelDeletion = () => {
                             {{ index + 1 }}
                           </td>
                           <td
-                            class="flex items-center gap-3 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white p-4"
+                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
-                          {{ item.name }}
+                            {{ item.business_date }}
                           </td>
                           <td
-                            class="flex items-center gap-3 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white p-4"
+                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
-                          {{ item.status }}
+                            {{ item.day_of_week }}
+                          </td>
+                          <td
+                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                          >
+                            {{ item.start_time }} - {{ item.end_time }}
+                          </td>
+                          <td
+                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                          >
+                            <Badge v-if="item.status == '1'" type="success">
+                              OPEN
+                            </Badge>
+                            <Badge v-if="item.status == '0'" type="danger">
+                              CLOSE
+                            </Badge>
                           </td>
                           <td
                             class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
                             <div class="flex gap-3">
                               <PrimaryButton
-                                :href="route('admin.membershipOption.show', item.id)"
+                                v-if="activeTab === 'allStoreSchedules' || 'storeSchedules'"
+                                :href="
+                                  route('admin.storeSchedule.show', item.id)
+                                "
                                 buttonType="info"
                                 class="size-10"
                               >
                                 <EyeOutline />
                               </PrimaryButton>
                               <PrimaryButton
-                                :href="route('admin.membershipOption.edit', item.id)"
+                                v-if="activeTab === 'allStoreSchedules' || 'storeSchedules'"
+                                :href="
+                                  route('admin.storeSchedule.edit', item.id)
+                                "
                                 buttonType="warning"
                                 class="size-10"
                               >
                                 <NoteEdit />
                               </PrimaryButton>
                               <DangerButton
-                                v-if="activeTab === 'membershipOptions'"
+                                v-if="activeTab === 'allStoreSchedules' || 'storeSchedules'"
                                 @click="requestDeletion(item, 'delete')"
                                 buttonType="danger"
                                 class="size-10"
@@ -228,15 +264,15 @@ const cancelDeletion = () => {
                                 <TrashCanOutline />
                               </DangerButton>
                               <PrimaryButton
-                                v-if="activeTab === 'deletedMembershipOptions'"
-                                @click="restoreMembershipOption(item.id)"
+                                v-if="activeTab === 'deletedStoreSchedules'"
+                                @click="restoreStoreSchedule(item.id)"
                                 buttonType="success"
                               >
                                 <Restore class="mr-2" />
                                 <span>復活</span>
                               </PrimaryButton>
                               <DangerButton
-                                v-if="activeTab === 'deletedMembershipOptions'"
+                                v-if="activeTab === 'deletedStoreSchedules'"
                                 @click="requestDeletion(item, 'forceDelete')"
                                 buttonType="danger"
                               >
@@ -250,31 +286,37 @@ const cancelDeletion = () => {
                     </div>
                     <!-- グリッド表示 -->
                     <div v-else>
-                      <GridView :items="currentMembershipOptions.data">
+                      <GridView :items="currentStoreSchedules.data">
                         <template #renderItem="{ item }">
                           <div class="space-y-2">
                             <h3
                               class="text-base font-medium text-gray-900 dark:text-white text-center"
                             >
-                              {{ item.name }}
+                              {{ item.business_date }} (
+                              {{ item.day_of_week }} )
                             </h3>
+                            <div class="flex justify-center"></div>
                             <div class="flex justify-center gap-3 mt-4">
                               <PrimaryButton
-                                :href="route('admin.membershipOption.show', item.id)"
+                                :href="
+                                  route('admin.storeSchedule.show', item.id)
+                                "
                                 buttonType="info"
                                 class="size-10"
                               >
                                 <EyeOutline />
                               </PrimaryButton>
                               <PrimaryButton
-                                :href="route('admin.membershipOption.edit', item.id)"
+                                :href="
+                                  route('admin.storeSchedule.edit', item.id)
+                                "
                                 buttonType="warning"
                                 class="size-10"
                               >
                                 <NoteEdit />
                               </PrimaryButton>
                               <DangerButton
-                                v-if="activeTab === 'membershipOptions'"
+                                v-if="activeTab === 'storeSchedules'"
                                 @click="requestDeletion(item, 'delete')"
                                 buttonType="danger"
                                 class="size-10"
@@ -282,15 +324,15 @@ const cancelDeletion = () => {
                                 <TrashCanOutline />
                               </DangerButton>
                               <PrimaryButton
-                                v-if="activeTab === 'deletedMembershipOptions'"
-                                @click="restoreMembershipOption(item.id)"
+                                v-if="activeTab === 'deletedStoreSchedules'"
+                                @click="restoreStoreSchedule(item.id)"
                                 buttonType="success"
                               >
                                 <Restore class="mr-2" />
                                 <span>復活</span>
                               </PrimaryButton>
                               <DangerButton
-                                v-if="activeTab === 'deletedMembershipOptions'"
+                                v-if="activeTab === 'deletedStoreSchedules'"
                                 @click="requestDeletion(item, 'forceDelete')"
                                 buttonType="danger"
                               >
@@ -309,6 +351,6 @@ const cancelDeletion = () => {
           </template>
         </Card>
       </div>
-    </SettingLayout>
+    </StoreLayout>
   </AdminAuthenticatedLayout>
 </template>

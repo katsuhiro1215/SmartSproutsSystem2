@@ -7,37 +7,39 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 
-class MembershipOption extends Model
+class StoreSchedule extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'membership_options';
+    protected $table = 'store_schedules';
 
     protected $fillable = [
-        'name',
-        'description',
+        'store_id',
+        'start_date',
+        'end_date',
+        'day_of_week',
         'status',
+        'note',
     ];
 
     // Relationships
-    // メンバーシップオプションに関連する生徒を取得 (1対多)
-    public function students()
+    public function store()
     {
-        return $this->hasMany(Student::class);
+        return $this->belongsTo(Store::class);
     }
 
     // Scopes
-    // 全メンバーシップオプションを取得するスコープ
-    public function scopeAllMembershipOptions(Builder $query)
+    // 全店舗スケジュールを取得するスコープ
+    public function scopeAllStoreSchedules(Builder $query)
     {
         return $query;
     }
-    // 削除されていないメンバーシップオプションを取得するスコープ
+    // 削除されていないスケジュールを取得するスコープ
     public function scopeWithoutTrashed(Builder $query)
     {
         return $query->whereNull('deleted_at');
     }
-    // 削除済みメンバーシップオプションを取得するスコープ
+    // 削除済みスケジュールを取得するスコープ
     public function scopeOnlyTrashed(Builder $query)
     {
         return $query->whereNotNull('deleted_at');

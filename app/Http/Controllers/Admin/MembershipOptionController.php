@@ -26,8 +26,17 @@ class MembershipOptionController extends Controller
      */
     public function index(): Response
     {
+        // 全メンバーシップオプション一覧
+        $allMembershipOptions = MembershipOption::allMembershipOptions()->get();
+        // 削除されていないメンバーシップオプション一覧
+        $membershipOptions = MembershipOption::withoutTrashed()->get();
+        // 削除済みメンバーシップオプション一覧
+        $deletedMembershipOptions = MembershipOption::onlyTrashed()->get();
+
         return Inertia::render('Admin/MembershipOptions/Index', [
-            'membershipOptions' => MembershipOption::select('id', 'name', 'status')->get(),
+            'allMembershipOptions' => $allMembershipOptions,
+            'membershipOptions' => $membershipOptions,
+            'deletedMembershipOptions' => $deletedMembershipOptions,
         ]);
     }
 
