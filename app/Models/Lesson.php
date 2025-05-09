@@ -29,6 +29,18 @@ class Lesson extends Model
         return $this->belongsTo(Store::class);
     }
 
+    // レッスンに関連するコースカテゴリーを取得 (1対多)
+    public function courseCategories()
+    {
+        return $this->hasMany(CourseCategory::class);
+    }
+
+    // コースカテゴリーに関するコースを取得 (1対多)
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
+
     // Scopes
     // 全レッスンを取得するスコープ
     public function scopeAllLessons($query)

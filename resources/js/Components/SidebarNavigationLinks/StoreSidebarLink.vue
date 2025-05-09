@@ -8,6 +8,12 @@ const menuItems = [
     icon: "/upload/store.png",
     route: "admin.store.index",
   },
+  {
+    name: "storeSchedule.index",
+    label: "スケジュール",
+    icon: "/upload/schedule.png",
+    route: "admin.storeSchedule.index",
+  },
 ];
 </script>
 

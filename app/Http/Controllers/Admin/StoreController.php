@@ -93,13 +93,15 @@ class StoreController extends Controller
             });
 
             return to_route('admin.store.index')->with([
-                'message' => '店舗の作成に成功しました。'
+                'message' => '店舗の作成に成功しました。',
+                'status' => 'success'
             ]);
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
 
             return to_route('admin.store.create')->with([
-                'message' => '店舗の作成に失敗しました。'
+                'message' => '店舗の作成に失敗しました。',
+                'status' => 'danger'
             ]);
         }
     }
@@ -169,13 +171,15 @@ class StoreController extends Controller
             });
 
             return to_route('admin.store.index')->with([
-                'message' => '店舗の更新に成功しました。'
+                'message' => '店舗の更新に成功しました。',
+                'status' => 'success'
             ]);
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
 
             return to_route('admin.store.edit', $store)->with([
-                'message' => '店舗の更新に失敗しました。'
+                'message' => '店舗の更新に失敗しました。',
+                'status' => 'danger'
             ]);
         }
     }
@@ -197,13 +201,15 @@ class StoreController extends Controller
             });
 
             return to_route('admin.store.index')->with([
-                'message' => '店舗の削除に成功しました。'
+                'message' => '店舗の削除に成功しました。',
+                'status' => 'success'
             ]);
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
 
             return to_route('admin.store.index')->with([
-                'message' => '店舗の削除に失敗しました。'
+                'message' => '店舗の削除に失敗しました。',
+                'status' => 'danger'
             ]);
         }
     }
@@ -222,13 +228,15 @@ class StoreController extends Controller
             });
 
             return to_route('admin.store.index')->with([
-                'message' => '店舗の復元に成功しました。'
+                'message' => '店舗の復元に成功しました。',
+                'status' => 'success'
             ]);
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
 
             return to_route('admin.store.index')->with([
-                'message' => '店舗の復元に失敗しました。'
+                'message' => '店舗の復元に失敗しました。',
+                'status' => 'danger'
             ]);
         }
     }
@@ -247,13 +255,15 @@ class StoreController extends Controller
             });
 
             return to_route('admin.store.index')->with([
-                'message' => '店舗の完全削除に成功しました。'
+                'message' => '店舗の完全削除に成功しました。',
+                'status' => 'success'
             ]);
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
 
             return to_route('admin.store.index')->with([
-                'message' => '店舗の完全削除に失敗しました。'
+                'message' => '店舗の完全削除に失敗しました。',
+                'status' => 'danger'
             ]);
         }
     }

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\StoreController;
+use App\Http\Controllers\Admin\StoreScheduleController;
 
 // 店舗
 Route::resource('/store', StoreController::class);
@@ -13,4 +14,13 @@ Route::controller(StoreController::class)->prefix('store')->group(function () {
   // API
   Route::get('/code/checkCode', 'checkCode')->name('store.checkCode');
   Route::get('/email/checkEmail', 'checkEmail')->name('store.checkEmail');
+});
+
+// 店舗スケジュール
+Route::resource('/storeSchedule', StoreScheduleController::class);
+Route::controller(StoreScheduleController::class)->prefix('storeSchedule')->group(function () {
+  Route::get('bulk/delete', 'bulkDelete')->name('storeSchedule.bulkDelete');
+  Route::post('bulk/destroy', 'bulkDestroy')->name('storeSchedule.bulkDestroy');
+  // API
+  Route::post('search', 'search')->name('storeSchedule.search');
 });
