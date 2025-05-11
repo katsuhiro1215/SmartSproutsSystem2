@@ -299,7 +299,7 @@ const update = () => {
                     buttonActionType="submit"
                     buttonType="warning"
                     :disabled="!isFormValid"
-                    ><Update class="mr-2" />登録</PrimaryButton
+                    ><Update class="mr-2" />更新</PrimaryButton
                   >
                   <PrimaryButton buttonType="secondary" @click="clearForm"
                     ><Clear class="mr-2" />

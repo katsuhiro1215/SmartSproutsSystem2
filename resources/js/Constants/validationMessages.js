@@ -16,6 +16,7 @@ export default {
         end_time_after_start_time:
             "終了時間は開始時間より後の時間を選択してください。",
         business_date: "営業日は正しい日付形式（YYYY-MM-DD）で入力してください。",
+        course_date: "コースの営業日は正しい日付形式（YYYY-MM-DD）で入力してください。",
         day_of_week: "曜日は月曜日から日曜日のいずれかを選択してください。",
         email: "メールアドレスの形式で入力してください。",
         emailUnique: "このメールアドレスは既に使用されています。",
