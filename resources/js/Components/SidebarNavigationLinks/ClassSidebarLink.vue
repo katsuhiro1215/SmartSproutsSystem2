@@ -26,6 +26,12 @@ const menuItems = [
     icon: "/upload/sports.png",
     route: "admin.course.index",
   },
+  {
+    name: "courseSchedule.index",
+    label: "スケジュール",
+    icon: "/upload/sports.png",
+    route: "admin.courseSchedule.index",
+  },
 ];
 </script>
 

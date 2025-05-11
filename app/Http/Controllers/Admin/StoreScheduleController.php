@@ -22,7 +22,10 @@ class StoreScheduleController extends Controller
         $this->middleware('auth:admins');
     }
     /**
-     * Display a listing of the resource.
+     * 店舗スケジュール一覧画面
+     * 
+     * @param Request $request
+     * @return \Inertia\Response
      */
     public function index(Request $request): Response
     {

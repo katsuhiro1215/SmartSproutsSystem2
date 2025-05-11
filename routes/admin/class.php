@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\Class\ClassController;
 use App\Http\Controllers\Admin\Class\LessonController;
 use App\Http\Controllers\Admin\Class\CourseCategoryController;
 use App\Http\Controllers\Admin\Class\CourseController;
+use App\Http\Controllers\Admin\Class\CourseScheduleController;
 
 // Class (Dashboard)
 Route::controller(ClassController::class)->prefix('class')->group(function () {
@@ -30,4 +31,17 @@ Route::resource('/course', CourseController::class);
 Route::controller(CourseController::class)->prefix('course')->group(function () {
   Route::get('/{course}/restore', 'restore')->name('course.restore');
   Route::delete('/{course}/forceDelete', 'forceDelete')->name('course.forceDelete');
+});
+
+// Course Schedule
+Route::resource('/courseSchedule', CourseScheduleController::class);
+Route::controller(CourseScheduleController::class)->prefix('courseSchedule')->group(function () {
+  // 復活 / 完全削除
+  Route::get('/{course}/restore', 'restore')->name('course.restore');
+  Route::delete('/{course}/forceDelete', 'forceDelete')->name('course.forceDelete');
+  // 一括削除
+  Route::get('bulk/delete', 'bulkDelete')->name('courseSchedule.bulkDelete');
+  Route::post('bulk/destroy', 'bulkDestroy')->name('courseSchedule.bulkDestroy');
+  // API
+  Route::post('search', 'search')->name('courseSchedule.search');
 });
