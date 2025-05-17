@@ -27,27 +27,10 @@ class StoreScheduleController extends Controller
      * @param Request $request
      * @return \Inertia\Response
      */
-    public function index(Request $request): Response
+    public function index(): Response
     {
-        // 1ページあたりの表示件数 (デフォルトは20件)
-        $perPage = $request->input('per_page', 20);
-        // 全店舗スケジュール一覧
-        $allStoreSchedules = StoreScheduleResource::collection(
-            StoreSchedule::with('store')->allStoreSchedules()->paginate($perPage)
-        );
-        // 削除されていない店舗スケジュール一覧
-        $storeSchedules = StoreScheduleResource::collection(
-            StoreSchedule::with('store')->withoutTrashed()->paginate($perPage)
-        );
-        // 削除済み店舗スケジュール一覧
-        $deletedStoreSchedules = StoreScheduleResource::collection(
-            StoreSchedule::with('store')->onlyTrashed()->paginate()
-        );
-
         return Inertia::render('Admin/Stores/Schedules/Index', [
-            'allStoreSchedules' => $allStoreSchedules,
-            'storeSchedules' => $storeSchedules,
-            'deletedStoreSchedules' => $deletedStoreSchedules,
+            'stores' => Store::select('id', 'name')->get(),
         ]);
     }
 
@@ -56,17 +39,10 @@ class StoreScheduleController extends Controller
      * 
      * @return \Inertia\Response
      */
-    public function create(): Response
+    public function create(Store $store): Response
     {
-        $stores = Store::select('id', 'name')->get()->map(function ($store) {
-            return [
-                'value' => $store->id,
-                'label' => $store->name,
-            ];
-        });
-        // 店舗スケジュール作成画面
         return Inertia::render('Admin/Stores/Schedules/Create', [
-            'stores' => $stores,
+            'store' => $store
         ]);
     }
 
@@ -234,29 +210,45 @@ class StoreScheduleController extends Controller
     {
         return Inertia::render('Admin/Stores/Schedules/BulkDelete');
     }
-
+    
     /**
-     * 店舗スケジュールの検索処理
+     * 店舗スケジュールの取得処理 API
      * 
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function search(Request $request)
+    public function fetchByStore($storeId)
     {
-        $validated = $request->validate([
-            'year' => 'required|integer|min:2000|max:2100',
-            'month' => 'required|integer|min:1|max:12',
-        ]);
+        // 指定された店舗のスケジュールを取得
+        $schedules = StoreSchedule::where('store_id', $storeId)->get();
 
-        $year = $validated['year'];
-        $month = $validated['month'];
-        // 年月を指定して店舗スケジュールを取得
-        $schedules = StoreSchedule::whereYear('start_date', $year)
-            ->whereMonth('start_date', $month)
-            ->with('store')
+        return response()->json([
+            'schedules' => $schedules,
+        ]);
+    }
+
+    /**
+     * 店舗スケジュールの検索処理 API
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function fetch(Request $request)
+    {
+        $storeId = $request->input('store_id');
+        $year = $request->input('year');
+        $month = $request->input('month');
+
+        if (!$storeId || !$year || !$month) {
+            return response()->json(['error' => 'Invalid parameters'], 400);
+        }
+
+        $schedules = StoreSchedule::where('store_id', $storeId)
+            ->whereYear('business_date', $year)
+            ->whereMonth('business_date', $month)
             ->get();
 
-        return response()->json($schedules);
+        return response()->json(['schedules' => $schedules]);
     }
 
     /**

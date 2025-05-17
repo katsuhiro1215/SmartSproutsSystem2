@@ -1,6 +1,7 @@
 <script setup>
 import { Head, useForm } from "@inertiajs/vue3";
 import { onMounted, ref, computed } from "vue";
+import axios from "axios";
 // Layouts
 import AdminAuthenticatedLayout from "@/Layouts/AdminAuthenticatedLayout.vue";
 // Components
@@ -12,80 +13,68 @@ import Breadcrumb from "@/Components/Breadcrumb.vue";
 import Card from "@/Components/Cards/Card.vue";
 import Alert from "@/Components/Alerts/Alert.vue";
 import FlashMessage from "@/Components/FlashMessage.vue";
-import ListView from "@/Components/ListView.vue";
-import GridView from "@/Components/GridView.vue";
-import Badge from "@/Components/Badge.vue";
 // Components - Buttons
 import PrimaryButton from "@/Components/Buttons/PrimaryButton.vue";
-import DangerButton from "@/Components/Buttons/DangerButton.vue";
 import BackButton from "@/Components/Buttons/BackButton.vue";
+// Components - Calendar
+import YearlyCalendar from "./_components/YearlyCalendar.vue";
+import MonthlyCalendar from "./_components/MonthlyCalendar.vue";
+import WeeklyCalendar from "./_components/WeeklyCalendar.vue";
 //icon
 import Plus from "vue-material-design-icons/Plus.vue";
 import Back from "vue-material-design-icons/ArrowLeft.vue";
 import TrashCanOutline from "vue-material-design-icons/TrashCanOutline.vue";
-import NoteEdit from "vue-material-design-icons/NoteEdit.vue";
-import Restore from "vue-material-design-icons/Restore.vue";
-import ViewList from "vue-material-design-icons/ViewList.vue";
-import DotsGrid from "vue-material-design-icons/DotsGrid.vue";
-import EyeOutline from "vue-material-design-icons/EyeOutline.vue";
+import ButtonLink from "@/Components/Buttons/ButtonLink.vue";
 
-const props = defineProps({
-  allStoreSchedules: Object,
-  storeSchedules: Object,
-  deletedStoreSchedules: Object,
+const stores = ref([]);
+const activeStore = ref(null);
+const currentSchedules = ref([]);
+const viewMode = ref("month");
+const currentStoreName = computed(() => {
+  const store = stores.value.find((store) => store.id === activeStore.value);
+  return store ? store.name : "店舗が選択されていません";
 });
-
-// Lifecycle
-onMounted(() => {
-  console.log("storeSchedules:", props);
-});
-
-const form = useForm({});
-
-// Tabs
-const tabs = [
-  { name: "allStoreSchedules", label: "全店舗スケジュール一覧" },
-  { name: "storeSchedules", label: "店舗スケジュール一覧" },
-  { name: "deletedStoreSchedules", label: "削除済店舗スケジュール一覧" },
-];
-const activeTab = ref("storeSchedules");
-const viewMode = ref("list");
-const switchTab = (tabName) => {
-  activeTab.value = tabName;
-};
-
-// Store Schedules
-const currentStoreSchedules = computed(() => {
-  return props[activeTab.value];
-});
-
-// 復活処理
-const restoreStoreSchedule = (id) => {
-  form.put(route("admin.storeSchedule.restore", id));
-};
-
-// 削除処理 (削除、完全削除) --- アラート表示
-const showAlert = ref(false);
-const currentEntity = ref(null);
-const entityType = ref("");
-const requestDeletion = (entity, type) => {
-  currentEntity.value = entity;
-  entityType.value = type;
-  showAlert.value = true;
-};
-const confirmDeletion = () => {
-  if (entityType.value === "delete") {
-    form.delete(route("admin.storeSchedule.destroy", currentEntity.value.id));
-  } else if (entityType.value === "forceDelete") {
-    form.delete(
-      route("admin.storeSchedule.forceDelete", currentEntity.value.id)
-    );
+// 店舗情報を取得
+const fetchStores = async () => {
+  try {
+    const response = await axios.get("/api/stores");
+    stores.value = response.data.stores;
+    if (stores.value.length > 0) {
+      activeStore.value = stores.value[0].id; // デフォルトで最初の店舗を選択
+      fetchSchedules(activeStore.value); // 最初の店舗のスケジュールを取得
+    }
+  } catch (error) {
+    console.error("店舗情報の取得に失敗しました:", error);
   }
-  showAlert.value = false;
 };
-const cancelDeletion = () => {
-  showAlert.value = false;
+
+// スケジュールを取得
+const fetchSchedules = async (storeId) => {
+  try {
+    const response = await axios.get(
+      route("admin.storeSchedule.fetchByStore", storeId)
+    );
+    currentSchedules.value = response.data.schedules;
+  } catch (error) {
+    console.error("スケジュールの取得に失敗しました:", error);
+  }
 };
+
+// 店舗を切り替える
+const switchStore = (storeId) => {
+  activeStore.value = storeId;
+  fetchSchedules(storeId);
+};
+
+// 表示モードを切り替える
+const switchViewMode = (mode) => {
+  viewMode.value = mode;
+};
+
+// コンポーネントの初期化時に店舗情報を取得
+onMounted(() => {
+  fetchStores();
+});
 </script>
 
 <template>
@@ -126,12 +115,9 @@ const cancelDeletion = () => {
           <PrimaryButton
             :href="route('admin.storeSchedule.bulkDelete')"
             buttonType="danger"
-            ><TrashCanOutline class="mr-2" />店舗スケジュール一括削除</PrimaryButton
-          >
-          <PrimaryButton
-            :href="route('admin.storeSchedule.create')"
-            buttonType="indigo"
-            ><Plus class="mr-2" />店舗スケジュール新規作成</PrimaryButton
+            ><TrashCanOutline
+              class="mr-2"
+            />店舗スケジュール一括削除</PrimaryButton
           >
           <BackButton :href="route('admin.dashboard')"
             ><Back />ホームへ戻る</BackButton
@@ -143,208 +129,77 @@ const cancelDeletion = () => {
           <template #content>
             <div class="w-full flex flex-wrap gap-2 mb-4">
               <PrimaryButton
-                v-for="tab in tabs"
-                :key="tab.name"
+                v-for="store in stores"
+                :key="store.id"
                 buttonType="primary"
-                :class="{ 'bg-indigo-300': activeTab === tab.name }"
-                @click="switchTab(tab.name)"
+                :class="{ 'bg-indigo-300': activeStore === store.id }"
+                @click="switchStore(store.id)"
               >
-                {{ tab.label }}
+                {{ store.name }}
               </PrimaryButton>
             </div>
-            <div class="flex justify-between items-center mb-4">
-              <div
-                class="relative flex justify-start items-center md:w-2/3 lg:w-1/3"
-              ></div>
-              <div class="flex justify-end gap-4">
-                <PrimaryButton
-                  @click="viewMode = 'list'"
-                  :class="{ 'bg-indigo-300': viewMode === 'list' }"
-                  buttonType="pink"
+            <div class="flex flex-col">
+              <div class="flex justify-between items-center mb-4">
+                <div
+                  class="relative flex justify-start items-center md:w-2/3 lg:w-1/3"
                 >
-                  <ViewList />
-                </PrimaryButton>
-                <PrimaryButton
-                  @click="viewMode = 'grid'"
-                  :class="{ 'bg-indigo-300': viewMode === 'grid' }"
-                  buttonType="info"
-                  iconSrc="/upload/grid-icon.svg"
-                  :iconOnly="true"
-                >
-                  <DotsGrid />
-                </PrimaryButton>
-              </div>
-            </div>
-            <div
-              class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg"
-            >
-              <div class="p-6 w-full items-center">
-                <div class="tab-content pt-0">
-                  <div
-                    v-for="tab in tabs"
-                    :key="tab.name"
-                    class="tab-pane space-y-4"
-                    role="tabpanel"
-                    v-show="activeTab === tab.name"
+                  <h2>{{ currentStoreName }} のスケジュール</h2>
+                </div>
+                <div class="flex justify-end gap-4">
+                  <!-- 切り替えボタン -->
+                  <PrimaryButton
+                    @click="viewMode = 'year'"
+                    :class="{ 'bg-indigo-300': viewMode === 'year' }"
+                    buttonType="info"
                   >
-                    <!-- リスト表示 -->
-                    <div v-if="viewMode === 'list'">
-                      <ListView
-                        :items="currentStoreSchedules"
-                        :headers="[
-                          'SL',
-                          '営業日',
-                          '曜日',
-                          '営業時間',
-                          'status',
-                          'Action',
-                        ]"
-                      >
-                        <template #renderItem="{ item, index }">
-                          <td
-                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                          >
-                            {{ index + 1 }}
-                          </td>
-                          <td
-                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                          >
-                            {{ item.business_date }}
-                          </td>
-                          <td
-                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                          >
-                            {{ item.day_of_week }}
-                          </td>
-                          <td
-                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                          >
-                            {{ item.start_time }} - {{ item.end_time }}
-                          </td>
-                          <td
-                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                          >
-                            <Badge v-if="item.status == '1'" type="success">
-                              OPEN
-                            </Badge>
-                            <Badge v-if="item.status == '0'" type="danger">
-                              CLOSE
-                            </Badge>
-                          </td>
-                          <td
-                            class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                          >
-                            <div class="flex gap-3">
-                              <PrimaryButton
-                                v-if="activeTab === 'allStoreSchedules' || 'storeSchedules'"
-                                :href="
-                                  route('admin.storeSchedule.show', item.id)
-                                "
-                                buttonType="info"
-                                class="size-10"
-                              >
-                                <EyeOutline />
-                              </PrimaryButton>
-                              <PrimaryButton
-                                v-if="activeTab === 'allStoreSchedules' || 'storeSchedules'"
-                                :href="
-                                  route('admin.storeSchedule.edit', item.id)
-                                "
-                                buttonType="warning"
-                                class="size-10"
-                              >
-                                <NoteEdit />
-                              </PrimaryButton>
-                              <DangerButton
-                                v-if="activeTab === 'allStoreSchedules' || 'storeSchedules'"
-                                @click="requestDeletion(item, 'delete')"
-                                buttonType="danger"
-                                class="size-10"
-                              >
-                                <TrashCanOutline />
-                              </DangerButton>
-                              <PrimaryButton
-                                v-if="activeTab === 'deletedStoreSchedules'"
-                                @click="restoreStoreSchedule(item.id)"
-                                buttonType="success"
-                              >
-                                <Restore class="mr-2" />
-                                <span>復活</span>
-                              </PrimaryButton>
-                              <DangerButton
-                                v-if="activeTab === 'deletedStoreSchedules'"
-                                @click="requestDeletion(item, 'forceDelete')"
-                                buttonType="danger"
-                              >
-                                <TrashCanOutline class="mr-2" />
-                                <span>完全削除</span>
-                              </DangerButton>
-                            </div>
-                          </td>
-                        </template>
-                      </ListView>
-                    </div>
-                    <!-- グリッド表示 -->
-                    <div v-else>
-                      <GridView :items="currentStoreSchedules.data">
-                        <template #renderItem="{ item }">
-                          <div class="space-y-2">
-                            <h3
-                              class="text-base font-medium text-gray-900 dark:text-white text-center"
-                            >
-                              {{ item.business_date }} (
-                              {{ item.day_of_week }} )
-                            </h3>
-                            <div class="flex justify-center"></div>
-                            <div class="flex justify-center gap-3 mt-4">
-                              <PrimaryButton
-                                :href="
-                                  route('admin.storeSchedule.show', item.id)
-                                "
-                                buttonType="info"
-                                class="size-10"
-                              >
-                                <EyeOutline />
-                              </PrimaryButton>
-                              <PrimaryButton
-                                :href="
-                                  route('admin.storeSchedule.edit', item.id)
-                                "
-                                buttonType="warning"
-                                class="size-10"
-                              >
-                                <NoteEdit />
-                              </PrimaryButton>
-                              <DangerButton
-                                v-if="activeTab === 'storeSchedules'"
-                                @click="requestDeletion(item, 'delete')"
-                                buttonType="danger"
-                                class="size-10"
-                              >
-                                <TrashCanOutline />
-                              </DangerButton>
-                              <PrimaryButton
-                                v-if="activeTab === 'deletedStoreSchedules'"
-                                @click="restoreStoreSchedule(item.id)"
-                                buttonType="success"
-                              >
-                                <Restore class="mr-2" />
-                                <span>復活</span>
-                              </PrimaryButton>
-                              <DangerButton
-                                v-if="activeTab === 'deletedStoreSchedules'"
-                                @click="requestDeletion(item, 'forceDelete')"
-                                buttonType="danger"
-                              >
-                                <TrashCanOutline class="mr-2" />
-                                <span>完全削除</span>
-                              </DangerButton>
-                            </div>
-                          </div>
-                        </template>
-                      </GridView>
-                    </div>
+                    <img src="/upload/year.png" alt="" width="20" height="20" />
+                  </PrimaryButton>
+                  <PrimaryButton
+                    @click="viewMode = 'month'"
+                    :class="{ 'bg-indigo-300': viewMode === 'month' }"
+                    buttonType="info"
+                  >
+                    <img
+                      src="/upload/month.png"
+                      alt=""
+                      width="20"
+                      height="20"
+                    />
+                  </PrimaryButton>
+                  <PrimaryButton
+                    @click="viewMode = 'week'"
+                    :class="{ 'bg-indigo-300': viewMode === 'week' }"
+                    buttonType="info"
+                  >
+                    <img src="/upload/week.png" alt="" width="20" height="20" />
+                  </PrimaryButton>
+                </div>
+              </div>
+              <div class="flex flex-col lg:flex-row gap-4">
+                <div class="w-20 lg:w-1/5">
+                  <div class="flex flex-col gap-2">
+                    <ButtonLink
+                      buttonType="primary"
+                      class="w-full"
+                      ><Plus class="mr-2" />スケジュール追加</ButtonLink
+                    >
                   </div>
+                </div>
+                <div class="w-full lg:w-4/5">
+                  <YearlyCalendar
+                    v-if="viewMode === 'year'"
+                    :schedules="currentSchedules"
+                  />
+                  <MonthlyCalendar
+                    v-if="viewMode === 'month'"
+                    :schedules="currentSchedules"
+                    :store-id="activeStore"
+                  />
+                  <WeeklyCalendar
+                    v-if="viewMode === 'week'"
+                    :schedules="currentSchedules"
+                    :store-id="activeStore"
+                  />
                 </div>
               </div>
             </div>

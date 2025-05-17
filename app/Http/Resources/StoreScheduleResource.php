@@ -21,10 +21,10 @@ class StoreScheduleResource extends JsonResource
                 'id' => $this->store->id,
                 'name' => $this->store->name,
             ],
-            'business_date' => Carbon::parse($this->start_date)->format('Y-m-d'),
+            'business_date' => $this->business_date,
             'day_of_week' => $this->day_of_week,
-            'start_time' => Carbon::parse($this->start_date)->format('H:i'),
-            'end_time' => Carbon::parse($this->end_date)->format('H:i'),            
+            'start_time' => $this->start_time ? Carbon::parse($this->start_time)->format('H:i') : null,
+            'end_time' => $this->end_time ? Carbon::parse($this->end_time)->format('H:i') : null,
             'status' => $this->status,
         ];
     }
