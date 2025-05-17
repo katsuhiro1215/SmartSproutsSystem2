@@ -1,6 +1,9 @@
 <script setup>
 import { Head, useForm } from "@inertiajs/vue3";
-import { onMounted, ref, computed } from "vue";
+import { ref, computed } from "vue";
+// Libraries
+import axios from "axios";
+import dayjs from "dayjs";
 // Layouts
 import AdminAuthenticatedLayout from "@/Layouts/AdminAuthenticatedLayout.vue";
 // Components
@@ -13,7 +16,7 @@ import Card from "@/Components/Cards/Card.vue";
 import FlashMessage from "@/Components/FlashMessage.vue";
 import WarningAlert from "@/Components/Alerts/WarningAlert.vue";
 import LoadingIndicator from "@/Components/Loadings/LoadingIndicator.vue";
-import Separator from "@/Components/Separator.vue";
+import SimpleTable from "@/Components/Tables/SimpleTable.vue";
 //  Components - Buttons
 import PrimaryButton from "@/Components/Buttons/PrimaryButton.vue";
 import BackButton from "@/Components/Buttons/BackButton.vue";
@@ -21,6 +24,7 @@ import BackButton from "@/Components/Buttons/BackButton.vue";
 import FormGroup from "@/Components/Forms/FormGroup.vue";
 import InputLabel from "@/Components/Forms/InputLabel.vue";
 import TextInput from "@/Components/Forms/TextInput.vue";
+import SelectInput from "@/Components/Forms/SelectInput.vue";
 import RadioInput from "@/Components/Forms/RadioInput.vue";
 import InputError from "@/Components/Forms/InputError.vue";
 //icon
@@ -30,70 +34,96 @@ import Back from "vue-material-design-icons/ArrowLeft.vue";
 import Save from "vue-material-design-icons/ContentSave.vue";
 import Clear from "vue-material-design-icons/CloseCircleOutline.vue";
 // Validation
-import {
-  validateStoreId,
-  validateBusinessDate,
-  validateStartTime,
-  validateEndTime,
-  validateDayOfWeek,
-  validateStatus,
-  validateAllFields,
-} from "./_components/validation";
-import validationMessages from "@/Constants/validationMessages";
+// import {
+//   validateStoreId,
+//   validateBusinessDate,
+//   validateStartTime,
+//   validateEndTime,
+//   validateDayOfWeek,
+//   validateStatus,
+//   validateAllFields,
+// } from "./_components/validation";
+// import validationMessages from "@/Constants/validationMessages";
 
 const props = defineProps({
   stores: Array,
 });
 
-const form = useForm({
-  store_id: 1,
-  schedules: [
-    {
-      business_date: "",
-      day_of_week: "",
-      start_time: "",
-      end_time: "",
-      status: true,
-      error: "",
-    },
-  ],
+const selectedStore = ref(null); // 選択された店舗ID
+const selectedStoreName = computed(() => {
+  const store = props.stores.find(
+    (store) => store.value === selectedStore.value
+  );
+  return store ? store.label : "";
 });
 
-const showAlert = ref(false); // アラートの表示状態
-const alertMessage = ref(""); // アラートのメッセージ
+const year = ref(""); // 入力された年
+const month = ref(""); // 入力された月
+const schedules = ref([]); // スケジュールデータ
 
-// スケジュールの追加と削除
-const MAX_SCHEDULES = 30;
+const isCardVisible = ref(false); // カードの表示状態
 
-const addSchedule = () => {
-  if (form.schedules.length >= MAX_SCHEDULES) {
-    alertMessage.value = `スケジュールは最大${MAX_SCHEDULES}件まで追加できます。`;
-    showAlert.value = true; // アラートを表示
+// ローディング
+const isLoading = ref(false);
+const loadingText = ref("");
+
+// スケジュールを取得する関数
+const fetchSchedules = async () => {
+  if (!selectedStore.value || !year.value || !month.value) {
+    alert("店舗と年月を入力してください。");
     return;
   }
 
-  form.schedules.push({
-    business_date: "",
-    day_of_week: "",
-    start_time: "",
-    end_time: "",
-    status: true,
-    error: "",
-  });
-  console.log("Schedules after adding:", form.schedules);
-};
+  isLoading.value = true;
+  loadingText.value = "スケジュールを取得中";
 
-const closeAlert = () => {
-  showAlert.value = false; // アラートを閉じる
-};
+  try {
+    const response = await axios.get(route("admin.storeSchedule.fetch"), {
+      params: {
+        store_id: selectedStore.value,
+        year: year.value,
+        month: month.value,
+      },
+    });
 
-const removeSchedule = (index) => {
-  if (form.schedules.length > 1) {
-    form.schedules.splice(index, 1);
+    const existingSchedules = response.data.schedules || {};
+    schedules.value = generateSchedulesWithExistingData(existingSchedules);
+    isCardVisible.value = true;
+  } catch (error) {
+    console.error("スケジュールの取得に失敗しました:", error);
+    schedules.value = generateEmptySchedules(); // データがない場合は空のスケジュールを生成
+  } finally {
+    isLoading.value = false;
+    loadingText.value = "";
   }
 };
 
-// 曜日の自動入力
+// 既存データをマージしてスケジュールを生成する関数
+const generateSchedulesWithExistingData = (existingSchedules) => {
+  const startOfMonth = dayjs(`${year.value}-${month.value}-01`);
+  const endOfMonth = startOfMonth.endOf("month");
+
+  const newSchedules = [];
+  for (
+    let date = startOfMonth;
+    date.isBefore(endOfMonth) || date.isSame(endOfMonth);
+    date = date.add(1, "day")
+  ) {
+    const businessDate = date.format("YYYY-MM-DD");
+    newSchedules.push(
+      existingSchedules[businessDate] || {
+        business_date: businessDate,
+        day_of_week: getDayOfWeek(businessDate),
+        start_time: "",
+        end_time: "",
+        status: true,
+      }
+    );
+  }
+  return newSchedules;
+};
+
+// 曜日を取得する関数
 const getDayOfWeek = (dateString) => {
   const days = [
     "日曜日",
@@ -108,40 +138,40 @@ const getDayOfWeek = (dateString) => {
   return days[date.getDay()];
 };
 
-const updateDayOfWeek = (index) => {
-  const schedule = form.schedules[index];
-  if (schedule.business_date) {
-    schedule.day_of_week = getDayOfWeek(schedule.business_date);
-  }
+// 前月に移動する関数
+const goToPreviousMonth = () => {
+  const currentMonth = dayjs(`${year.value}-${month.value}-01`);
+  const previousMonth = currentMonth.subtract(1, "month");
+  year.value = previousMonth.format("YYYY");
+  month.value = previousMonth.format("MM");
+  fetchSchedules();
 };
 
-// 入力中のスケジュール同士の重複チェック
-const checkLocalScheduleConflict = (index) => {
-  const currentSchedule = form.schedules[index];
-
-  if (
-    !currentSchedule.business_date ||
-    !currentSchedule.start_time ||
-    !currentSchedule.end_time
-  ) {
-    currentSchedule.error = "";
-    return;
-  }
-
-  const isConflict = form.schedules.some((schedule, i) => {
-    if (i === index) return false;
-
-    return (
-      schedule.business_date === currentSchedule.business_date &&
-      schedule.start_time < currentSchedule.end_time &&
-      schedule.end_time > currentSchedule.start_time
-    );
-  });
-
-  currentSchedule.error = isConflict
-    ? "このスケジュールは他のスケジュールと重複しています。"
-    : "";
+// 次月に移動する関数
+const goToNextMonth = () => {
+  const currentMonth = dayjs(`${year.value}-${month.value}-01`);
+  const nextMonth = currentMonth.add(1, "month");
+  year.value = nextMonth.format("YYYY");
+  month.value = nextMonth.format("MM");
+  fetchSchedules();
 };
+
+const form = useForm({
+  store_id: "",
+  schedules: [
+    {
+      business_date: "",
+      day_of_week: "",
+      start_time: "",
+      end_time: "",
+      status: true,
+      error: "",
+    },
+  ],
+});
+
+const showAlert = ref(false); // アラートの表示状態
+const alertMessage = ref(""); // アラートのメッセージ
 
 // ステータス
 const statusOptions = [
@@ -159,10 +189,6 @@ function clearForm() {
   form.status = true;
   form.errors = {};
 }
-
-// ローディング
-const isLoading = ref(false);
-const loadingText = ref("");
 
 // ボタンの状態
 const isSubmitDisabled = computed(() => {
@@ -237,59 +263,137 @@ const store = () => {
       <div class="w-full p-5">
         <Card>
           <template #content>
+            <div class="space-y-4">
+              <div class="flex">
+                <FormGroup class="w-full lg:max-w-md">
+                  <InputLabel for="store_id" value="店舗名" required />
+                  <template v-if="props.stores.length <= 3">
+                    <RadioInput
+                      id="store_id"
+                      v-model="selectedStore"
+                      :options="props.stores"
+                      required
+                    />
+                  </template>
+                  <template v-else>
+                    <SelectInput
+                      id="store_id"
+                      v-model="selectedStore"
+                      :options="props.stores"
+                      required
+                    />
+                  </template>
+                </FormGroup>
+              </div>
+              <div class="flex gap-4 mb-4">
+                <FormGroup class="w-1/4">
+                  <InputLabel for="year" value="年" required />
+                  <TextInput
+                    id="year"
+                    type="number"
+                    class="mt-1 block w-full"
+                    v-model="year"
+                    placeholder="例: 2025"
+                    required
+                  />
+                </FormGroup>
+                <FormGroup class="w-1/4">
+                  <InputLabel for="month" value="月" required />
+                  <TextInput
+                    id="month"
+                    type="number"
+                    class="mt-1 block w-full"
+                    v-model="month"
+                    placeholder="例: 5"
+                    required
+                  />
+                </FormGroup>
+              </div>
+              <PrimaryButton buttonType="success" @click="fetchSchedules">
+                スケジュールを取得
+              </PrimaryButton>
+            </div>
+          </template>
+        </Card>
+        <Card v-if="isCardVisible">
+          <template #content>
             <div class="space-y-6">
               <!-- Form -->
               <form @submit.prevent="store" class="space-y-6">
-                <div class="flex flex-col lg:flex-row gap-5">
-                  <div class="w-full space-y-4">
-                    <div class="flex flex-col lg:flex-row gap-4">
-                      <FormGroup class="w-1/2">
-                        <InputLabel for="store_id" value="店舗名" required />
-                        <RadioInput
-                          id="store_id"
-                          name="store_id"
-                          v-model="form.store_id"
-                          @blur="validateStoreId(form)"
-                          :options="stores"
-                          required
-                        />
-                        <InputError
-                          class="mt-2"
-                          :message="form.errors.store_id"
-                        />
-                      </FormGroup>
-                    </div>
-                    <Separator />
-                    <div class="space-y-4">
-                      <div
-                        v-for="(schedule, index) in form.schedules"
-                        :key="index"
-                        class="flex flex-col lg:flex-row gap-4"
+                <h3>{{ selectedStore.name }}</h3>
+                <p>開始時間、終了時間、ステータスを入力していください。</p>
+                <div class="space-y-4">
+                  <div class="flex justify-center gap-5">
+                    <PrimaryButton
+                      buttonType="secondary"
+                      @click="goToPreviousMonth"
+                    >
+                      前月
+                    </PrimaryButton>
+                    <!-- 今月を表示 year month -->
+                    <PrimaryButton buttonType="primary">
+                      {{ year }}年{{ month }}月
+                    </PrimaryButton>
+                    <PrimaryButton buttonType="secondary" @click="goToNextMonth">
+                      次月
+                    </PrimaryButton>
+                  </div>
+                  <SimpleTable>
+                    <template #header>
+                      <tr>
+                        <th
+                          class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                        >
+                          SL
+                        </th>
+                        <th
+                          class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                        >
+                          営業日
+                        </th>
+                        <th
+                          class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                        >
+                          曜日
+                        </th>
+                        <th
+                          class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                        >
+                          開始時間
+                        </th>
+                        <th
+                          class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                        >
+                          終了時間
+                        </th>
+                        <th
+                          class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400"
+                        >
+                          ステータス
+                        </th>
+                      </tr>
+                    </template>
+                    <template #body>
+                      <tr
+                        v-for="(schedule, index) in schedules"
+                        :key="schedule.id"
                       >
-                        <FormGroup class="w-1/6">
-                          <InputLabel
-                            for="business_date"
-                            value="営業日"
-                            required
-                          />
+                        <td>{{ index + 1 }}</td>
+                        <td
+                          class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        >
                           <TextInput
                             id="business_date"
                             type="date"
                             class="mt-1 block w-full"
                             v-model="schedule.business_date"
-                            @change="updateDayOfWeek(index)"
-                            @blur="checkLocalScheduleConflict(index)"
                             required
+                            readonly
                           />
-                          <InputError
-                            class="mt-2"
-                            :message="
-                              schedule.error || form.errors.business_date
-                            "
-                          />
-                        </FormGroup>
-                        <FormGroup class="w-1/6">
-                          <InputLabel for="day_of_week" value="曜日" required />
+                        </td>
+                        <td
+                          class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        >
                           <TextInput
                             id="day_of_week"
                             type="text"
@@ -298,55 +402,40 @@ const store = () => {
                             required
                             readonly
                           />
-                          <InputError
-                            class="mt-2"
-                            :message="form.errors.day_of_week"
-                          />
-                        </FormGroup>
-                        <FormGroup class="w-1/6">
-                          <InputLabel
-                            for="start_time"
-                            value="開始時間"
-                            required
-                          />
+                        </td>
+                        <td
+                          class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        >
                           <TextInput
                             id="start_time"
                             type="time"
                             class="mt-1 block w-full"
                             v-model="schedule.start_time"
-                            @blur="checkLocalScheduleConflict(index)"
                             required
                           />
                           <InputError
                             class="mt-2"
-                            :message="schedule.error || form.errors.start_time"
+                            :message="form.errors.start_time"
                           />
-                        </FormGroup>
-                        <FormGroup class="w-1/6">
-                          <InputLabel
-                            for="end_time"
-                            value="終了時間"
-                            required
-                          />
+                        </td>
+                        <td
+                          class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        >
                           <TextInput
                             id="end_time"
                             type="time"
                             class="mt-1 block w-full"
                             v-model="schedule.end_time"
-                            @blur="checkLocalScheduleConflict(index)"
                             required
                           />
                           <InputError
                             class="mt-2"
-                            :message="schedule.error || form.errors.end_time"
+                            :message="form.errors.end_time"
                           />
-                        </FormGroup>
-                        <FormGroup class="w-1/6">
-                          <InputLabel
-                            :for="`status-${index}`"
-                            value="ステータス"
-                            required
-                          />
+                        </td>
+                        <td
+                          class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        >
                           <RadioInput
                             :id="`status-${index}`"
                             :name="`status-${index}`"
@@ -358,27 +447,16 @@ const store = () => {
                             class="mt-2"
                             :message="form.errors.status"
                           />
-                        </FormGroup>
-                        <!-- 追加、削除のボタン -->
-                        <FormGroup class="w-1/6">
-                          <InputLabel value="Action" />
-                          <div class="flex gap-2">
-                            <PrimaryButton
-                              buttonType="success"
-                              @click="addSchedule"
-                              ><Add class="mr-2" /> 追加</PrimaryButton
-                            >
-                            <PrimaryButton
-                              buttonType="danger"
-                              @click="removeSchedule"
-                              ><Remove class="mr-2" /> 削除</PrimaryButton
-                            >
-                          </div>
-                        </FormGroup>
-                      </div>
-                    </div>
-                  </div>
+                        </td>
+                      </tr>
+                    </template>
+                  </SimpleTable>
                 </div>
+
+                <p class="flex">
+                  1~10でお応えください。<br>
+                  <span>(10~)</span>
+                </p>
                 <div class="flex flex-col lg:flex-row gap-4">
                   <PrimaryButton
                     buttonActionType="submit"
