@@ -18,6 +18,7 @@ import PrimaryButton from "@/Components/Buttons/PrimaryButton.vue";
 import BackButton from "@/Components/Buttons/BackButton.vue";
 // Components - Lesson
 import CourseInfo from "./_components/CourseInfo.vue";
+import ScheduleInfo from "./_components/ScheduleInfo.vue";
 // Icon
 import Plus from "vue-material-design-icons/Plus.vue";
 import Back from "vue-material-design-icons/ArrowLeft.vue";
@@ -35,12 +36,14 @@ import Youtube from "vue-material-design-icons/YouTube.vue";
 
 const props = defineProps({
   course: Object,
+  schedules: Array,
 });
 
 const activeTab = ref("courseInfo");
 
 const tabs = [
   { name: "コース情報", key: "courseInfo" },
+  { name: "スケジュール情報", key: "scheduleInfo" },
 ];
 
 const setActiveTab = (tab) => {
@@ -81,7 +84,7 @@ const setActiveTab = (tab) => {
         </div>
       </div>
       <div class="w-full flex flex-col lg:flex-row gap-5 p-5">
-        <Card class="w-full lg:w-1/3">
+        <Card class="w-full lg:w-1/5">
           <template #content>
             <div class="flex flex-col items-center space-y-6">
               <Avatar
@@ -94,10 +97,21 @@ const setActiveTab = (tab) => {
                 alt="Site Logo"
               />
               <h3 class="text-center mt-4">{{ course.name }}</h3>
+              <div class="flex flex-col">
+                <!-- コーススケジュール -->
+                <PrimaryButton
+                  :href="route('admin.courseSchedule.create', course.id)"
+                  buttonType="info"
+                  class="w-full mb-2"
+                >
+                  <Plus class="mr-2" />
+                  コーススケジュール
+                </PrimaryButton>
+              </div>
             </div>
           </template>
         </Card>
-        <Card class="w-full lg:w-2/3">
+        <Card class="w-full lg:w-4/5">
           <template #content>
             <div class="w-full space-y-6">
               <ul
@@ -118,6 +132,9 @@ const setActiveTab = (tab) => {
               </ul>
               <div class="w-full space-y-4" v-if="activeTab === 'courseInfo'">
                 <CourseInfo :course="course" />
+              </div>
+              <div class="w-full space-y-4" v-else-if="activeTab === 'scheduleInfo'">
+                <ScheduleInfo :course="course" />
               </div>
             </div>
           </template>

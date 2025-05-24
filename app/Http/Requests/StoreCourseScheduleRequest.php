@@ -24,7 +24,7 @@ class StoreCourseScheduleRequest extends FormRequest
         return [
             'course_id' => ['required', 'exists:courses,id'],
             'schedules' => ['required', 'array'],
-            'schedules.*.business_date' => ['required', 'date'],
+            'schedules.*.course_date' => ['required', 'date'],
             'schedules.*.day_of_week' => ['required', 'string', 'max:10'],
             'schedules.*.start_time' => ['required', 'date_format:H:i'],
             'schedules.*.end_time' => ['required', 'date_format:H:i'],

@@ -35,6 +35,11 @@ class Course extends Model
     {
         return $this->belongsTo(CourseCategory::class);
     }
+    // コースに関連するコーススケジュールを取得 (1対多)
+    public function courseSchedules()
+    {
+        return $this->hasMany(CourseSchedule::class);
+    }
 
     // Scopes
     // 全コースを取得するスコープ

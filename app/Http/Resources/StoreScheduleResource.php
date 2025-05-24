@@ -26,6 +26,7 @@ class StoreScheduleResource extends JsonResource
             'start_time' => $this->start_time ? Carbon::parse($this->start_time)->format('H:i') : null,
             'end_time' => $this->end_time ? Carbon::parse($this->end_time)->format('H:i') : null,
             'status' => $this->status,
+            'note' => $this->note,
         ];
     }
 }

@@ -1,6 +1,7 @@
 <script setup>
 import { Head, useForm } from "@inertiajs/vue3";
-import { ref, computed } from "vue";
+import { defineProps, ref, computed } from "vue";
+import axios from "axios";
 // Layouts
 import AdminAuthenticatedLayout from "@/Layouts/AdminAuthenticatedLayout.vue";
 // Components
@@ -13,7 +14,6 @@ import Card from "@/Components/Cards/Card.vue";
 import FlashMessage from "@/Components/FlashMessage.vue";
 import WarningAlert from "@/Components/Alerts/WarningAlert.vue";
 import LoadingIndicator from "@/Components/Loadings/LoadingIndicator.vue";
-import Separator from "@/Components/Separator.vue";
 //  Components - Buttons
 import PrimaryButton from "@/Components/Buttons/PrimaryButton.vue";
 import BackButton from "@/Components/Buttons/BackButton.vue";
@@ -21,7 +21,6 @@ import BackButton from "@/Components/Buttons/BackButton.vue";
 import FormGroup from "@/Components/Forms/FormGroup.vue";
 import InputLabel from "@/Components/Forms/InputLabel.vue";
 import TextInput from "@/Components/Forms/TextInput.vue";
-import SelectInput from "@/Components/Forms/SelectInput.vue";
 import RadioInput from "@/Components/Forms/RadioInput.vue";
 import InputError from "@/Components/Forms/InputError.vue";
 //icon
@@ -40,17 +39,13 @@ import {
   validateStatus,
   validateAllFields,
 } from "./_components/validation";
-import validationMessages from "@/Constants/validationMessages";
 
 const props = defineProps({
-  stores: Array,
-  lessons: Array,
-  courseCategories: Array,
-  courses: Array,
+  course: Object,
 });
 
 const form = useForm({
-  course_id: 1,
+  course_id: props.course.id,
   schedules: [
     {
       course_date: "",
@@ -61,66 +56,6 @@ const form = useForm({
       error: "",
     },
   ],
-});
-
-// 選択された値を保持するためのref
-const selectedStore = ref(null);
-const selectedLesson = ref(null);
-const selectedCourseCategory = ref(null);
-const selectedCourse = ref(null);
-
-// ストア、レッスン、コースカテゴリー、コースの選択肢をcomputedプロパティで定義
-const stores = computed(() => {
-  return props.stores.map((store) => ({
-    value: store.id,
-    label: store.name,
-  }));
-});
-
-const lessons = computed(() => {
-  return props.lessons.map((lesson) => ({
-    value: lesson.id,
-    label: lesson.name,
-    store_id: lesson.store_id,
-  }));
-});
-
-const courseCategories = computed(() => {
-  return props.courseCategories.map((category) => ({
-    value: category.id,
-    label: category.name,
-    lesson_id: category.lesson_id,
-  }));
-});
-
-const courses = computed(() => {
-  return props.courses.map((course) => ({
-    value: course.id,
-    label: course.name,
-    lesson_id: course.lesson_id,
-    course_category_id: course.course_category_id,
-  }));
-});
-
-// フィルタリング
-const filteredLessons = computed(() => {
-  return lessons.value.filter(
-    (lesson) => lesson.store_id === Number(selectedStore.value)
-  );
-});
-
-const filteredCourseCategories = computed(() => {
-  return courseCategories.value.filter(
-    (category) => category.lesson_id === Number(selectedLesson.value)
-  );
-});
-
-const filteredCourses = computed(() => {
-  return courses.value.filter(
-    (course) =>
-      course.lesson_id === Number(selectedLesson.value) &&
-      course.course_category_id === Number(selectedCourseCategory.value)
-  );
 });
 
 const showAlert = ref(false); // アラートの表示状態
@@ -137,6 +72,7 @@ const addSchedule = () => {
   }
 
   form.schedules.push({
+    id: Date.now(), // 一意のIDを生成
     course_date: "",
     day_of_week: "",
     start_time: "",
@@ -152,9 +88,10 @@ const closeAlert = () => {
 };
 
 const removeSchedule = (index) => {
-  if (form.schedules.length > 1) {
-    form.schedules.splice(index, 1);
-  }
+  const scheduleToRemove = form.schedules[index];
+  form.schedules = form.schedules.filter(
+    (schedule) => schedule.id !== scheduleToRemove.id
+  );
 };
 
 // 曜日の自動入力
@@ -179,8 +116,52 @@ const updateDayOfWeek = (index) => {
   }
 };
 
+const validateSchedule = async (index) => {
+  const schedule = form.schedules[index];
+
+  if (!schedule.course_date || !schedule.start_time || !schedule.end_time) {
+    schedule.error = "";
+    return;
+  }
+
+  try {
+    const response = await axios.post(
+      route("admin.courseSchedule.validate", props.course.id),
+      {
+        course_id: form.course_id,
+        course_date: schedule.course_date,
+        start_time: schedule.start_time,
+        end_time: schedule.end_time,
+      }
+    );
+
+    console.log("Validation Response:", response.data);
+
+    if (!response.data.isValid) {
+      schedule.error = "このスケジュールは店舗の営業時間外です。";
+    } else {
+      schedule.error = ""; // エラーがない場合
+    }
+
+    // 店舗スケジュールをコンソールに表示
+    console.log("Store Schedules:", response.data.storeSchedules);
+
+    schedule.error = ""; // エラーがない場合
+  } catch (error) {
+    if (error.response && error.response.status === 422) {
+      schedule.error = error.response.data.error; // サーバーからのエラーメッセージを設定
+    } else if (error.response && error.response.status === 404) {
+      schedule.error = "関連する店舗またはスケジュールが見つかりません。";
+    } else {
+      console.error(
+        "スケジュールのバリデーション中にエラーが発生しました:",
+        error
+      );
+    }
+  }
+};
 // 入力中のスケジュール同士の重複チェック
-const checkLocalScheduleConflict = (index) => {
+const checkLocalScheduleConflict = async (index) => {
   const currentSchedule = form.schedules[index];
 
   if (
@@ -202,9 +183,14 @@ const checkLocalScheduleConflict = (index) => {
     );
   });
 
-  currentSchedule.error = isConflict
-    ? "このスケジュールは他のスケジュールと重複しています。"
-    : "";
+  if (isConflict) {
+    currentSchedule.error =
+      "このスケジュールは他のスケジュールと重複しています。";
+    return;
+  }
+
+  // サーバーサイドでのバリデーション
+  await validateSchedule(index);
 };
 
 // ステータス
@@ -215,13 +201,16 @@ const statusOptions = [
 
 // クリアボタンの動作
 function clearForm() {
-  form.course_id = "";
-  form.course_date = "";
-  form.start_time = "";
-  form.end_time = "";
-  form.day_of_week = "";
-  form.status = true;
-  form.errors = {};
+  form.schedules = [
+    {
+      course_date: "",
+      day_of_week: "",
+      start_time: "",
+      end_time: "",
+      status: true,
+      error: "",
+    },
+  ];
 }
 
 // ローディング
@@ -244,7 +233,11 @@ const store = () => {
   if (Object.keys(form.errors).length === 0) {
     isLoading.value = true;
     loadingText.value = "登録中";
-    form.post(route("admin.courseSchedule.store"), {
+    console.log("Form data before submission:", form.schedules);
+    form.schedules.forEach((schedule) => {
+      schedule.error = ""; // エラーをリセット
+    });
+    form.post(route("admin.courseSchedule.store", { course: form.course_id}), {
       onFinish: () => {
         isLoading.value = false;
         loadingText.value = "";
@@ -267,9 +260,12 @@ const store = () => {
             { name: 'Home', url: route('admin.dashboard') },
             {
               name: 'Course Schedule',
-              url: route('admin.courseSchedule.index'),
+              url: route('admin.course.index'),
             },
-            { name: 'Create', url: route('admin.courseSchedule.create') },
+            {
+              name: 'Create',
+              url: route('admin.courseSchedule.create', course.id),
+            },
           ]"
         />
       </div>
@@ -294,9 +290,7 @@ const store = () => {
           />
         </div>
         <div class="w-1/2 flex justify-end items-center gap-2">
-          <BackButton
-            :href="route('admin.courseSchedule.index')"
-            buttonType="secondary"
+          <BackButton :href="route('admin.course.index')" buttonType="secondary"
             ><Back />コーススケジュール一覧へ戻る</BackButton
           >
         </div>
@@ -305,85 +299,15 @@ const store = () => {
         <Card>
           <template #content>
             <div class="space-y-6">
+              <h3>{{ course.name }}</h3>
               <!-- Form -->
               <form @submit.prevent="store" class="space-y-6">
                 <div class="flex flex-col lg:flex-row gap-5">
                   <div class="w-full space-y-4">
-                    <div class="flex flex-col lg:flex-row gap-4">
-                      <FormGroup class="w-full md:max-w-md">
-                        <InputLabel for="store_id" value="店舗名" required />
-                        <SelectInput
-                          id="store_id"
-                          name="store_id"
-                          v-model="selectedStore"
-                          :options="stores"
-                          required
-                        />
-                        <InputError
-                          class="mt-2"
-                          :message="form.errors.store_id"
-                        />
-                      </FormGroup>
-                    </div>
-                    <div class="flex flex-col lg:flex-row gap-4">
-                      <FormGroup class="w-full lg:w-1/2 md:max-w-md" v-if="selectedStore">
-                        <InputLabel
-                          for="lesson_id"
-                          value="レッスン名"
-                          required
-                        />
-                        <SelectInput
-                          id="lesson_id"
-                          name="lesson_id"
-                          v-model="selectedLesson"
-                          :options="filteredLessons"
-                          required
-                        />
-                        <InputError
-                          class="mt-2"
-                          :message="form.errors.lesson_id"
-                        />
-                      </FormGroup>
-                      <FormGroup class="w-full lg:w-1/2 md:max-w-md" v-if="selectedLesson">
-                        <InputLabel
-                          for="course_category_id"
-                          value="コースカテゴリー名"
-                          required
-                        />
-                        <SelectInput
-                          id="course_category_id"
-                          name="course_category_id"
-                          v-model="selectedCourseCategory"
-                          :options="filteredCourseCategories"
-                          required
-                        />
-                        <InputError
-                          class="mt-2"
-                          :message="form.errors.course_category_id"
-                        />
-                      </FormGroup>
-                    </div>
-                    <div class="flex flex-col lg:flex-row gap-4">
-                      <FormGroup class="w-full lg:w-1/2 md:max-w-md" v-if="selectedCourseCategory">
-                        <InputLabel for="course_id" value="コース名" required />
-                        <SelectInput
-                          id="course_id"
-                          name="course_id"
-                          v-model="selectedCourse"
-                          :options="filteredCourses"
-                          required
-                        />
-                        <InputError
-                          class="mt-2"
-                          :message="form.errors.course_id"
-                        />
-                      </FormGroup>
-                    </div>
-                    <Separator />
                     <div class="space-y-4">
                       <div
                         v-for="(schedule, index) in form.schedules"
-                        :key="index"
+                        :key="schedule.id"
                         class="flex flex-col lg:flex-row gap-4"
                       >
                         <FormGroup class="w-1/6">
@@ -488,7 +412,7 @@ const store = () => {
                             >
                             <PrimaryButton
                               buttonType="danger"
-                              @click="removeSchedule"
+                              @click="removeSchedule(index)"
                               ><Remove class="mr-2" /> 削除</PrimaryButton
                             >
                           </div>

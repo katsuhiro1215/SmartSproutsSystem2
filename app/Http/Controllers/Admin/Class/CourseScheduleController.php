@@ -24,57 +24,16 @@ class CourseScheduleController extends Controller
     {
         $this->middleware('auth:admins');
     }
-    /**
-     * コーススケジュール一覧画面
-     * 
-     * @param Request $request
-     * @return \Inertia\Response
-     */
-    public function index(Request $request): Response
-    {
-        // 1ページあたりの表示件数 (デフォルトは20件)
-        $perPage = $request->input('per_page', 20);
-        // 全コーススケジュール一覧
-        $allCourseSchedules = CourseScheduleResource::collection(
-            CourseSchedule::with('course')->allCourseSchedules()->paginate($perPage)
-        );
-        // 削除されていないコーススケジュール一覧
-        $courseSchedules = CourseScheduleResource::collection(
-            CourseSchedule::with('course')->withoutTrashed()->paginate($perPage)
-        );
-        // 削除済みコーススケジュール一覧
-        $deletedCourseSchedules = CourseScheduleResource::collection(
-            CourseSchedule::with('course')->onlyTrashed()->paginate()
-        );
-
-        return Inertia::render('Admin/Classes/Courses/Schedules/Index', [
-            'allCourseSchedules' => $allCourseSchedules,
-            'courseSchedules' => $courseSchedules,
-            'deletedCourseSchedules' => $deletedCourseSchedules,
-        ]);
-    }
 
     /**
      * コーススケジュール作成画面
      * 
      * @return \Inertia\Response
      */
-    public function create(): Response
+    public function create(Course $course): Response
     {
-        $stores = Store::select('id', 'name')->get();
-
-        $lessons = Lesson::select('id', 'name', 'store_id')->get();
-
-        $courseCategories = CourseCategory::select('id', 'name', 'lesson_id')->get();
-
-        $courses = Course::select('id', 'name', 'lesson_id', 'course_category_id')->get();
-
-
         return Inertia::render('Admin/Classes/Courses/Schedules/Create', [
-            'stores' => $stores,
-            'lessons' => $lessons,
-            'courseCategories' => $courseCategories,
-            'courses' => $courses,
+            'course' => $course
         ]);
     }
 
@@ -88,7 +47,6 @@ class CourseScheduleController extends Controller
      */
     public function store(StoreCourseScheduleRequest $request)
     {
-        dd($request);
         $validatedData = $request->validated();
 
         $courseId = $validatedData['course_id'];
@@ -98,15 +56,16 @@ class CourseScheduleController extends Controller
         $skippedSchedules = [];
 
         foreach ($schedules as $schedule) {
-            // Carbonでdatetime型に変換
-            $startDateTime = Carbon::parse($schedule['course_date'] . ' ' . $schedule['start_time']);
-            $endDateTime = Carbon::parse($schedule['course_date'] . ' ' . $schedule['end_time']);
+            // Carbonでdatetime型に変換（不要になったため削除）
+            $startTime = $schedule['start_time'];
+            $endTime = $schedule['end_time'];
 
             // 重複するスケジュールのチェック
             $existingSchedules = CourseSchedule::where('course_id', $courseId)
-                ->where(function ($query) use ($startDateTime, $endDateTime) {
-                    $query->where('start_date', '<', $endDateTime)
-                        ->where('end_date', '>', $startDateTime);
+                ->where('course_date', $schedule['course_date']) // 同じ日付で
+                ->where(function ($query) use ($startTime, $endTime) {
+                    $query->where('start_time', '<', $endTime) // 開始時間が重複
+                        ->where('end_time', '>', $startTime); // 終了時間が重複
                 })
                 ->exists();
 
@@ -118,9 +77,10 @@ class CourseScheduleController extends Controller
             // スケジュールを作成
             CourseSchedule::create([
                 'course_id' => $courseId,
-                'start_date' => $startDateTime,
-                'end_date' => $endDateTime,
+                'course_date' => $schedule['course_date'],
                 'day_of_week' => $schedule['day_of_week'],
+                'start_time' => $schedule['start_time'],
+                'end_time' => $schedule['end_time'],
                 'status' => $schedule['status'],
             ]);
 
@@ -143,7 +103,7 @@ class CourseScheduleController extends Controller
             'successful_schedules' => $successfulSchedules,
         ];
 
-        return redirect()->route('admin.courseSchedule.index')->with($notification);
+        return redirect()->route('admin.course.index')->with($notification);
     }
 
     /**
@@ -242,5 +202,62 @@ class CourseScheduleController extends Controller
     public function bulkCreate(): Response
     {
         return Inertia::render('Admin/Stores/Schedules/BulkCreate');
+    }
+
+    // API
+    /**
+     * 店舗スケジュールの取得処理 API
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function fetchByCourse(Course $course)
+    {
+        $courseId = $course->id;
+        // 指定された店舗のスケジュールを取得
+        $schedules = CourseSchedule::where('course_id', $courseId)->get();
+
+        return response()->json([
+            'schedules' => $schedules,
+        ]);
+    }
+
+    /**
+     * コーススケジュールのバリデーション
+     * 入力されたスケジュールが店舗の営業時間内に収まっているか確認するAPI
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function validateSchedule(Request $request)
+    {
+        $validatedData = $request->validate([
+            'course_id' => 'required|exists:courses,id',
+            'course_date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+        ]);
+
+        // 店舗スケジュールのバリデーション
+        $course = Course::with('lesson.store')->findOrFail($validatedData['course_id']);
+        $store = $course->lesson->store;
+
+        if (!$store) {
+            return response()->json(['error' => '店舗が見つかりません。'], 404);
+        }
+
+        $storeSchedules = $store->schedules;
+
+        $isValid = $storeSchedules->some(function ($storeSchedule) use ($validatedData) {
+            return $storeSchedule->business_date === $validatedData['course_date'] &&
+                $storeSchedule->start_time <= $validatedData['start_time'] &&
+                $storeSchedule->end_time >= $validatedData['end_time'];
+        });
+
+        if (!$isValid) {
+            return response()->json(['error' => 'このスケジュールは店舗の営業時間外です。'], 422);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

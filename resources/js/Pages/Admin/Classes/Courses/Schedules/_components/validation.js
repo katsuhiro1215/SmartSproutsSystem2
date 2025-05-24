@@ -1,5 +1,32 @@
 import validationMessages from "@/Constants/validationMessages";
 
+// 店舗IDのバリデーション 選択必須
+export const validateStoreId = (form) => {
+    if (!form.store_id) {
+        form.errors.store_id = validationMessages.common.required;
+    } else {
+        delete form.errors.store_id;
+    }
+};
+
+// レッスンIDのバリデーション 選択必須
+export const validateLessonId = (form) => {
+    if (!form.lesson_id) {
+        form.errors.lesson_id = validationMessages.common.required;
+    } else {
+        delete form.errors.lesson_id;
+    }
+};
+
+// コースカテゴリーIDのバリデーション 選択必須
+export const validateCourseCategoryId = (form) => {
+    if (!form.course_category_id) {
+        form.errors.course_category_id = validationMessages.common.required;
+    } else {
+        delete form.errors.course_category_id;
+    }
+};
+
 // コースIDのバリデーション 選択必須
 export const validateCourseId = (form) => {
     if (!form.course_id) {
@@ -74,6 +101,9 @@ export const validateStatus = (form) => {
 
 
 export const validateAllFields = (form) => {
+    validateStoreId(form);
+    validateLessonId(form);
+    validateCourseCategoryId(form);
     validateCourseId(form);
     validateCourseDate(form);
     validateStartTime(form);
