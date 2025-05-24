@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Class;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseRequest;
+use App\Http\Resources\CourseScheduleResource;
 use App\Models\Course;
 use App\Models\CourseCategory;
 use App\Models\Lesson;
@@ -147,6 +148,7 @@ class CourseController extends Controller
     {
         return Inertia::render('Admin/Classes/Courses/Show', [
             'course' => $course,
+            'schedules' => $course->courseSchedules,
         ]);
     }
 

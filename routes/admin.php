@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CalendarController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SettingController;
@@ -34,6 +35,20 @@ Route::middleware(['auth:admins', 'verified'])->group(function () {
   });
 
   require __DIR__ . '/admin/admin.php';
+
+  Route::controller(CalendarController::class)->prefix('calendar')->group(function () {
+    // 全店舗のカレンダー
+    Route::get('yearly', 'yearly')->name('calendar.yearly');
+    Route::get('monthly', 'monthly')->name('calendar.monthly');
+    Route::get('weekly', 'weekly')->name('calendar.weekly');
+    Route::get('daily', 'daily')->name('calendar.daily');
+
+    // 各店舗のカレンダー
+    Route::get('store/{store}/yearly', 'storeYearly')->name('calendar.storeYearly');
+    Route::get('store/{store}/monthly', 'storeMonthly')->name('calendar.storeMonthly');
+    Route::get('store/{store}/weekly', 'storeWeekly')->name('calendar.storeWeekly');
+    Route::get('store/{store}/daily', 'storeDaily')->name('calendar.storeDaily');
+  });
   require __DIR__ . '/admin/store.php';
   require __DIR__ . '/admin/class.php';
   

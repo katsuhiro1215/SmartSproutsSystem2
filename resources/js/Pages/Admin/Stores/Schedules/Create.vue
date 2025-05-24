@@ -452,11 +452,6 @@ const store = () => {
                     </template>
                   </SimpleTable>
                 </div>
-
-                <p class="flex">
-                  1~10でお応えください。<br>
-                  <span>(10~)</span>
-                </p>
                 <div class="flex flex-col lg:flex-row gap-4">
                   <PrimaryButton
                     buttonActionType="submit"

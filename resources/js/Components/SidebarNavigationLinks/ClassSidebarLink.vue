@@ -27,10 +27,10 @@ const menuItems = [
     route: "admin.course.index",
   },
   {
-    name: "courseSchedule.index",
+    name: "calendar.monthly",
     label: "スケジュール",
-    icon: "/upload/sports.png",
-    route: "admin.courseSchedule.index",
+    icon: "/upload/schedule.png",
+    route: "admin.calendar.monthly",
   },
 ];
 </script>

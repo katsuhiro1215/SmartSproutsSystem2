@@ -18,14 +18,15 @@ class CourseScheduleResource extends JsonResource
         return [
             'id' => $this->id,
             'course' => [
-                'id' => $this->store->id,
-                'name' => $this->store->name,
+                'id' => $this->course->id,
+                'name' => $this->course->name,
             ],
             'course_date' => Carbon::parse($this->start_date)->format('Y-m-d'),
             'day_of_week' => $this->day_of_week,
             'start_time' => Carbon::parse($this->start_date)->format('H:i'),
             'end_time' => Carbon::parse($this->end_date)->format('H:i'),
             'status' => $this->status,
+            'note' => $this->note,
         ];
     }
 }

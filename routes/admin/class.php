@@ -33,15 +33,19 @@ Route::controller(CourseController::class)->prefix('course')->group(function () 
   Route::delete('/{course}/forceDelete', 'forceDelete')->name('course.forceDelete');
 });
 
-// Course Schedule
-Route::resource('/courseSchedule', CourseScheduleController::class);
-Route::controller(CourseScheduleController::class)->prefix('courseSchedule')->group(function () {
-  // 復活 / 完全削除
-  Route::get('/{course}/restore', 'restore')->name('course.restore');
-  Route::delete('/{course}/forceDelete', 'forceDelete')->name('course.forceDelete');
-  // 一括削除
-  Route::get('bulk/delete', 'bulkDelete')->name('courseSchedule.bulkDelete');
-  Route::post('bulk/destroy', 'bulkDestroy')->name('courseSchedule.bulkDestroy');
-  // API
-  Route::post('search', 'search')->name('courseSchedule.search');
+// Course Schedule (courseを含む)
+Route::prefix('{course}')->group(function () {
+  Route::resource('/courseSchedule', CourseScheduleController::class)->except('index');
+  Route::controller(CourseScheduleController::class)->prefix('courseSchedule')->group(function () {
+    // 復活 / 完全削除
+    Route::get('/restore', 'restore')->name('course.restore');
+    Route::delete('/forceDelete', 'forceDelete')->name('course.forceDelete');
+    // 一括削除
+    Route::get('bulk/delete', 'bulkDelete')->name('courseSchedule.bulkDelete');
+    Route::post('bulk/destroy', 'bulkDestroy')->name('courseSchedule.bulkDestroy');
+    // API
+    Route::post('search', 'search')->name('courseSchedule.search');
+    Route::get('schedule/fetch', 'fetchByCourse')->name('courseSchedule.fetchByCourse');
+    Route::post('/course/schedules/validate', 'validateSchedule')->name('courseSchedule.validate');
+  });
 });

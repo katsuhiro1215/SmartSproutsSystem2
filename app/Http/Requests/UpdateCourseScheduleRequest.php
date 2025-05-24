@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ApiRequest;  // 追記
 
-class UpdateCourseScheduleRequest extends FormRequest
+class UpdateCourseScheduleRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
