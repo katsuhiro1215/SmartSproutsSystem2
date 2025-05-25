@@ -7,7 +7,7 @@ const defaultMenuItems = [
   { name: 'admin', route: 'admin.employee.index', label: '従業員', icon: '/upload/employees.png' },
   { name: 'store', route: 'admin.store.index', label: '店舗', icon: '/upload/store.png' },
   { name: 'class', route: 'admin.class.index', label: 'クラス', icon: '/upload/sports.png' },
-  { name: 'event', route: 'admin.dashboard', label: 'イベント', icon: '/upload/event.png' },
+  { name: 'event', route: 'admin.event.index', label: 'イベント', icon: '/upload/event.png' },
   { name: 'announcement', route: 'admin.dashboard', label: '告知', icon: '/upload/announcement.png' },
   { name: 'fee', route: 'admin.dashboard', label: '会計', icon: '/upload/salary.png' },
   { name: 'website', route: 'admin.dashboard', label: 'Webサイト', icon: '/upload/mobile.png' },
