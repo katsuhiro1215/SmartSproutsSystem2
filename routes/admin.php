@@ -49,9 +49,11 @@ Route::middleware(['auth:admins', 'verified'])->group(function () {
     Route::get('store/{store}/weekly', 'storeWeekly')->name('calendar.storeWeekly');
     Route::get('store/{store}/daily', 'storeDaily')->name('calendar.storeDaily');
   });
-  require __DIR__ . '/admin/store.php';
-  require __DIR__ . '/admin/class.php';
   
+  require __DIR__ . '/admin/store.php';
   require __DIR__ . '/admin/user.php';
+  require __DIR__ . '/admin/class.php';
+  require __DIR__ . '/admin/event.php';
+  
 });
 
