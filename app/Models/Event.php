@@ -30,6 +30,13 @@ class Event extends Model
         'application_end_time',
     ];
 
+    // Relationships
+    // イベントに関連するイベントスケジュールを取得 (1対多)
+    public function eventSchedules()
+    {
+        return $this->hasMany(EventSchedule::class);
+    }
+
     // Scopes
     // 全イベントを取得するスコープ
     public function scopeAllEvents(Builder $query)

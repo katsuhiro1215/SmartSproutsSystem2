@@ -17,14 +17,10 @@ import Pagination from "@/Components/Pagination.vue";
 import PrimaryButton from "@/Components/Buttons/PrimaryButton.vue";
 import BackButton from "@/Components/Buttons/BackButton.vue";
 // Components - Organization
-import EventInfo from "./_components/EventInfo.vue";
+import EventScheduleInfo from "./_components/EventScheduleInfo.vue";
 // Icon
 import Plus from "vue-material-design-icons/Plus.vue";
 import Back from "vue-material-design-icons/ArrowLeft.vue";
-import Magnify from "vue-material-design-icons/Magnify.vue";
-import ViewList from "vue-material-design-icons/ViewList.vue";
-import DotsGrid from "vue-material-design-icons/DotsGrid.vue";
-import EyeOutline from "vue-material-design-icons/EyeOutline.vue";
 import NoteEdit from "vue-material-design-icons/NoteEdit.vue";
 import TrashCanOutline from "vue-material-design-icons/TrashCanOutline.vue";
 import Web from "vue-material-design-icons/Web.vue";
@@ -34,14 +30,12 @@ import Instagram from "vue-material-design-icons/Instagram.vue";
 import Youtube from "vue-material-design-icons/YouTube.vue";
 
 const props = defineProps({
-  event: Object,
+  eventSchedule: Object,
 });
 
-const activeTab = ref("eventInfo");
+const activeTab = ref("eventScheduleInfo");
 
-const tabs = [
-  { name: "イベント情報", key: "eventInfo" },
-];
+const tabs = [{ name: "イベントスケジュール情報", key: "eventScheduleInfo" }];
 
 const setActiveTab = (tab) => {
   activeTab.value = tab;
@@ -49,18 +43,21 @@ const setActiveTab = (tab) => {
 </script>
 
 <template>
-  <Head title="イベント管理" />
+  <Head title="イベントスケジュール管理" />
 
   <AdminAuthenticatedLayout>
     <!-- Header -->
     <template #header>
       <div class="flex sm:flex-row items-center justify-between">
-        <PageTitle title="イベント管理" />
+        <PageTitle title="イベントスケジュール管理" />
         <Breadcrumb
           :items="[
             { name: 'Home', url: route('admin.dashboard') },
-            { name: 'Event', url: route('admin.event.index') },
-            { name: 'Show', url: route('admin.event.show', event.id) },
+            { name: 'Event Schedule', url: route('admin.eventSchedule.index') },
+            {
+              name: 'Show',
+              url: route('admin.eventSchedule.show', eventSchedule.id),
+            },
           ]"
         />
       </div>
@@ -71,8 +68,10 @@ const setActiveTab = (tab) => {
     <EventLayout>
       <div class="flex justify-between">
         <div class="flex flex-col gap-2">
-          <PageSubTitle title="イベント詳細" />
-          <PageDescription description="イベントの詳細を表示する画面です。" />
+          <PageSubTitle title="イベントスケジュール詳細" />
+          <PageDescription
+            description="イベントのスケジュールの詳細を表示する画面です。"
+          />
         </div>
         <div class="flex justify-end items-center gap-2">
           <BackButton :href="route('admin.event.index')"
@@ -84,16 +83,8 @@ const setActiveTab = (tab) => {
         <Card class="w-full lg:w-1/3">
           <template #content>
             <div class="flex flex-col items-center space-y-6">
-              <Avatar
-                :src="
-                  event.event_photo_path
-                    ? `/storage/events/${event.event_photo_path}`
-                    : '/upload/event.png'
-                "
-                size="xl"
-                alt="Event Image"
-              />
-              <h3 class="text-center mt-4">{{ event.name }}</h3>
+              <Avatar :src="'/upload/schedule.png'" size="xl" alt="Schedule Image" />
+              <h3 class="text-center mt-4">{{ eventSchedule.store.name }}</h3>
             </div>
           </template>
         </Card>
@@ -116,8 +107,11 @@ const setActiveTab = (tab) => {
                   </a>
                 </li>
               </ul>
-              <div class="w-full space-y-4" v-if="activeTab === 'eventInfo'">
-                <EventInfo :event="event" />
+              <div
+                class="w-full space-y-4"
+                v-if="activeTab === 'eventScheduleInfo'"
+              >
+                <EventScheduleInfo :eventSchedule="eventSchedule" />
               </div>
             </div>
           </template>
