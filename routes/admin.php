@@ -54,6 +54,6 @@ Route::middleware(['auth:admins', 'verified'])->group(function () {
   require __DIR__ . '/admin/user.php';
   require __DIR__ . '/admin/class.php';
   require __DIR__ . '/admin/event.php';
-  
+  require __DIR__ . '/admin/questionnaire.php';
 });
 

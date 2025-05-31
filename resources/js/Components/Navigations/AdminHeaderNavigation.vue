@@ -12,7 +12,7 @@ const defaultMenuItems = [
   { name: 'fee', route: 'admin.dashboard', label: '会計', icon: '/upload/salary.png' },
   { name: 'website', route: 'admin.dashboard', label: 'Webサイト', icon: '/upload/mobile.png' },
   { name: 'ec', route: 'admin.dashboard', label: 'EC', icon: '/upload/shopping.png' },
-  { name: 'questionnaire', route: 'admin.dashboard', label: 'アンケート', icon: '/upload/note.png' },
+  { name: 'questionnaire', route: 'admin.questionnaire.index', label: 'アンケート', icon: '/upload/note.png' },
   { name: 'contact', route: 'admin.dashboard', label: 'お問い合わせ', icon: '/upload/email.png' },
   { name: 'widget', route: 'admin.dashboard', label: 'ウィジェット', icon: '/upload/menu.png' },
   { name: 'settings', route: 'admin.setting.index', label: '設定', icon: '/upload/settings.png' },

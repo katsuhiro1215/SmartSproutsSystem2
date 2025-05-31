@@ -45,6 +45,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CourseCategorySeeder::class);
         $this->call(CourseSeeder::class);
         $this->call(EventSeeder::class);
+        $this->call(QuestionnaireSeeder::class);
 
         // Factory
         Admin::factory(20)->create();
